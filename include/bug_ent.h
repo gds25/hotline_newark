@@ -9,6 +9,6 @@
  * @param position the location in the world to spawn the bug at
  * @returns NULL on error, or a pointer to the bug
  */
-Entity *bug_ent_new(Vector2D position);
+Entity *bug_ent_new(Vector2D position, SDL_GameController* controller);
 
 #endif

@@ -16,6 +16,28 @@ typedef struct ENTITY_S
     Vector2D    draw_scale;  /**<the scale factor for drawing the sprite*/
     Vector2D    mins,maxs;  /**<describe the bounding box around this entity*/
     void (*think)(struct ENTITY_S *self);   /**<a pointer to a think function for this entity*/
+    void (*update)(struct ENTITY_S *self);   /**<a pointer to an update function for this entity*/
+
+    SDL_GameController* controller; /**<ONLY USED IN PLAYER.H - checks to see if controller is connected*/
+    Vector2D crosshair_position; /**<ONLY USED IN PLAYER.H - position of crosshair*/
+    int enemyType; /**<ONLY USED IN ENEMY.H - specifies enemy type*/
+
+    enum entType { PLAYER, ENEMY, PICKUP, BULLET } entity;
+    enum pickupType{HEALTH, ARMOR, AMMO, SPEED, INVIS, BAT, PISTOL, SHOTGUN, UZI, MG} pickup; /**<ONLY USED IN PICKUP.H - specifies pickup type*/
+    
+    Uint32 health;
+    Uint32 armor;
+    Uint32 damage;
+    Uint32 ammo;
+
+    Uint8 isStatic;
+    Uint8 isPlayer; //is entity the player ent
+    Uint8 isMonster; //is entity a monster ent
+    Uint8 isPaused;
+    Uint8 isDead;
+    Uint8 isPoweredUp;
+
+    Uint32 powerUpTime;
 }Entity;
 
 
@@ -36,6 +58,10 @@ void entity_manager_draw_all();
  */
 void entity_manager_think_all();
 
+/**
+ * @brief runs any update function for all active entities
+ */
+void entity_manager_update_all();
 
 /**
  * @brief free all active entities
@@ -56,9 +82,26 @@ Entity *entity_new();
 void entity_draw(Entity *entity);
 
 /**
+ * @brief entity's logic
+ * @param entity the entity to think
+ */
+void entity_think(Entity *entity);
+
+/**
+ * @brief updates position and state of the given entity
+ * @param entity the entity to update
+ */
+void entity_update(Entity *entity);
+
+/**
  * @brief free the memory of an entity
  * @param entity the entity to free
  */
 void entity_free(Entity *entity);
+
+/**
+* @brief entity collision checker
+*/
+void check_collisions();
 
 #endif

@@ -5,7 +5,7 @@
 #include "player.h"
 #include "bullet.h"
 
-Entity* bullet_new(Vector2D position, Vector2D playerPos, float rotation) {
+Entity* bullet_new(Vector2D position, Vector2D goalPos, float rotation) {
     Entity* ent;
     Vector2D movement;
     ent = entity_new();
@@ -22,15 +22,15 @@ Entity* bullet_new(Vector2D position, Vector2D playerPos, float rotation) {
     ent->draw_offset.y = -8;
     ent->rotation.x = 8;
     ent->rotation.y = 8;
-    ent->rotation.z = rotation;
+    ent->rotation.z = rotation-90;
 
-    movement.x = playerPos.x - position.x;
-    movement.y = playerPos.x - position.x;
+    movement.x = goalPos.x - position.x;
+    movement.y = goalPos.y - position.y;
     vector2d_copy(ent->position, position);
 
     vector2d_set_magnitude(&movement, 1);
     vector2d_copy(ent->velocity, movement);
-    //slog("created bullet");
+    slog("created bullet");
     //slog("velocity: %f, %f", ent->velocity.x, ent->velocity.y);
     return ent;
 }
@@ -41,12 +41,12 @@ Entity* bullet_new(Vector2D position, Vector2D playerPos, float rotation) {
 */
 void bullet_think(Entity* self) {
     Vector2D playerPos = player_get_bounding_box();
-    if (self->position.x >= playerPos.x &&
+    /*if (self->position.x >= playerPos.x &&
         self->position.x <= playerPos.x + 64 &&
         self->position.y >= playerPos.y &&
         self->position.y <= playerPos.y + 64
-        )
-        entity_free(self);
+        )*/
+        //entity_free(self);
 }
 
 /**

@@ -34,6 +34,35 @@ Entity* pickup_new(Vector2D position, int pickupType, char *filename) {
     return ent;
 }
 
+Entity* weapon_new(Vector2D position, int weaponType, char *filename) {
+    Entity* ent;
+    ent = entity_new();
+    if (!ent)
+    {
+        slog("no space for bugs");
+        return NULL;
+    }
+
+    ent->sprite = gf2d_sprite_load_all(filename, 24, 24, 1);
+    //ent->think = pickup_think;
+    //ent->update = pickup_update;
+    ent->draw_offset.x = -24;
+    ent->draw_offset.y = -24;
+    ent->rotation.x = 12;
+    ent->rotation.y = 12;
+    ent->rotation.z = 0;
+
+    ent->weapon = weaponType;
+    ent->entity = WEAPON;
+
+    slog("pickup ent type: %d", ent->entity);
+
+    //ent->rotation.z = 
+    vector2d_copy(ent->position, position);
+    pickup_set_bounding_box(ent);
+    return ent;
+}
+
 void pickup_set_bounding_box(Entity* self) {
     self->mins.x = self->position.x - 12;
     self->mins.y = self->position.y - 12;

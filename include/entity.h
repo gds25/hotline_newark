@@ -9,6 +9,9 @@ typedef struct ENTITY_S
     Uint8       _inuse;     /**<this flag keeps track if this entity is active or free to reassign*/
     Sprite     *sprite;     /**<sprite used to draw the sprite*/
     float       frame;      /**<current frame to draw*/
+    float       max_walk_frame;
+    float       max_attack_frame;
+    float       frames_per_line;
     Vector2D    draw_offset;/**<draw position relative to the entity position*/
     Vector2D    position;   /**<where our entity lives*/
     Vector2D    velocity;   /**<how our entity moves*/
@@ -22,8 +25,9 @@ typedef struct ENTITY_S
     Vector2D crosshair_position; /**<ONLY USED IN PLAYER.H - position of crosshair*/
     int enemyType; /**<ONLY USED IN ENEMY.H - specifies enemy type*/
 
-    enum entType { PLAYER, ENEMY, PICKUP, BULLET } entity;
-    enum pickupType{HEALTH, ARMOR, AMMO, SPEED, INVIS, BAT, PISTOL, SHOTGUN, UZI, MG} pickup; /**<ONLY USED IN PICKUP.H - specifies pickup type*/
+    enum entType { PLAYER, ENEMY, PICKUP, WEAPON, BULLET } entity;
+    enum pickupType { HEALTH, ARMOR, AMMO, SPEED, INVIS } pickup; /**<ONLY USED IN PICKUP.H - specifies pickup type*/
+    enum weaponType{ BAT, PISTOL, SHOTGUN, UZI, MG} weapon; /**<ONLY USED IN PICKUP.H - specifies weapon type*/
     
     Uint32 health;
     Uint32 armor;

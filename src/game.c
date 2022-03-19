@@ -27,7 +27,8 @@ int main(int argc, char * argv[])
     float mf = 0;
     Sprite *mouse;
     Sprite* player;
-    Sprite* health;
+    Sprite* health, *armor, *ammo, *speed, *invis;
+    Sprite* bat, *pistol, *shotgun, *uzi, *mg;
     Vector2D player_aabb;
     Vector2D enemy_aabb;
     Sprite* enemy_bat;
@@ -75,10 +76,22 @@ int main(int argc, char * argv[])
         }
     }
 
-    /*demo setup*/
+    /*setup*/
     sprite = gf2d_sprite_load_image("images/backgrounds/bg_flat.png");
     player = player_new(vector2d(500, 300), controller);
+
     health = pickup_new(vector2d(100, 100), 0, "images/health.png");
+    armor = pickup_new(vector2d(200, 100), 1, "images/armor.png");
+    ammo = pickup_new(vector2d(300, 100), 2, "images/ammo.png");
+    speed = pickup_new(vector2d(400, 100), 3, "images/speed.png");
+    invis = pickup_new(vector2d(500, 100), 4, "images/invisibility.png");
+
+    bat = weapon_new(vector2d(100, 200), 0, "images/bat.png");
+    pistol = weapon_new(vector2d(100, 300), 1, "images/pistol.png");
+    shotgun = weapon_new(vector2d(100, 400), 2, "images/shotgun.png");
+    uzi = weapon_new(vector2d(100, 500), 3, "images/uzi.png");
+    mg = weapon_new(vector2d(100, 600), 4, "images/machinegun.png");
+
     mouse = gf2d_sprite_load_all("images/pointer.png",32,32,16);
     crosshair = gf2d_sprite_load_image("images/crosshair.png");
     enemy_bat = enemy_new(vector2d(1000,200), 1);
@@ -100,7 +113,7 @@ int main(int argc, char * argv[])
         
         player_aabb = player_get_bounding_box();
         enemy_aabb = enemy_get_bounding_box();
-        SDL_Rect player_box = { player_aabb.x, player_aabb.y, 64, 64 };
+        SDL_Rect player_box = { player_aabb.x, player_aabb.y, 32, 32 };
         SDL_Rect enemy_box = { enemy_aabb.x, enemy_aabb.y, 64, 64 };
         gf2d_graphics_clear_screen();// clears drawing buffers
         // all drawing should happen betweem clear_screen and next_frame

@@ -4,6 +4,7 @@
 
 #include "camera.h"
 #include "player.h"
+#include "bullet.h"
 
 
 static Entity player = { 0 };
@@ -28,7 +29,7 @@ Vector2D player_get_bounding_box() {
     return player.mins;
 }
 
-void player_set_stats(Entity *self, int pickupType) {
+void player_set_stats(Entity* self, int pickupType) {
     switch (pickupType) {
     case HEALTH:
         self->health += 10;
@@ -47,20 +48,62 @@ void player_set_stats(Entity *self, int pickupType) {
     case INVIS:
         self->ammo += 10;
         break;
+    default:
+        break;
+    }
+}
+
+void player_set_weapon(Entity * self, int weaponType) {
+    switch(weaponType) {
     case BAT:
-        self->ammo += 10;
+        self->sprite = gf2d_sprite_load_all("images/player_bat.png", 32, 32, 9);
+        self->draw_scale.x = 2;
+        self->draw_scale.y = 2;
+        self->draw_offset.x = -16;
+        self->rotation.x = 16;
+        self->max_walk_frame = 8;
+        self->max_attack_frame = 9;
+        self->frames_per_line = 9;
         break;
     case PISTOL:
-        self->ammo += 10;
+        self->sprite = gf2d_sprite_load_all("images/player_pistol(1).png", 44, 32, 8);
+        self->draw_scale.x = 1.4545;
+        self->draw_scale.y = 2;
+        self->draw_offset.x = -22;
+        self->rotation.x = 22;
+        self->max_walk_frame = 8;
+        self->max_attack_frame = 2;
+        self->frames_per_line = 8;
         break;
     case SHOTGUN:
-        self->ammo += 10;
+        self->sprite = gf2d_sprite_load_all("images/player_shotgun.png", 44, 32, 12);
+        self->draw_scale.x = 1.4545;
+        self->draw_scale.y = 2;
+        self->draw_offset.x = -22;
+        self->rotation.x = 22;
+        self->max_walk_frame = 8;
+        self->max_attack_frame = 12;
+        self->frames_per_line = 12;
         break;
     case UZI:
-        self->ammo += 10;
+        self->sprite = gf2d_sprite_load_all("images/player_uzi.png", 44, 32, 8);
+        self->draw_scale.x = 1.4545;
+        self->draw_scale.y = 2;
+        self->draw_offset.x = -22;
+        self->rotation.x = 22;
+        self->max_walk_frame = 8;
+        self->max_attack_frame = 2;
+        self->frames_per_line = 8;
         break;
     case MG:
-        self->ammo += 10;
+        self->sprite = gf2d_sprite_load_all("images/player_mg.png", 44, 32, 8);
+        self->draw_offset.x = 1.4545;
+        self->draw_offset.y = 2;
+        self->draw_offset.x = -22;
+        self->rotation.x = 22;
+        self->max_walk_frame = 8;
+        self->max_attack_frame = 2;
+        self->frames_per_line = 8;
         break;
     default:
         break;
@@ -68,8 +111,8 @@ void player_set_stats(Entity *self, int pickupType) {
 }
 
 void player_set_bounding_box(Entity* self) {
-    self->mins.x = self->position.x - 32;
-    self->mins.y = self->position.y - 32;
+    self->mins.x = self->position.x;
+    self->mins.y = self->position.y;
     self->maxs.x = self->position.x + 32;
     self->maxs.y = self->position.y + 32;
 
@@ -86,8 +129,6 @@ void player_think(Entity* self)
     float angle;
 
     if (!self)return;
-    self->frame = (self->frame + 0.1);
-    if (self->frame >= 16)self->frame = 0;
 
     const Uint8* keys;
     const int deadZone = 100;
@@ -117,14 +158,14 @@ void player_think(Entity* self)
         else {
             direction.y = 0;
         }
-        angle = vector2d_angle(direction) - 90;
-        self->rotation.z = angle;
+        angle = vector2d_angle(direction);
+        self->rotation.z = angle-90;
     }
     else if (yRotate > deadZone || yRotate < 0 - deadZone) {
         direction.y = (yRotate);
         direction.x = 0;
-        angle = vector2d_angle(direction) - 90;
-        self->rotation.z = angle;
+        angle = vector2d_angle(direction);
+        self->rotation.z = angle-90;
         
     }
 
@@ -183,8 +224,19 @@ void player_think(Entity* self)
         {
             vector2d_clear(self->velocity);
         }
+        if (SDL_GameControllerGetButton(self->controller,
+            SDL_CONTROLLER_BUTTON_RIGHTSHOULDER) && self->ammo > 0 ||
+            (self->frame >= self->frames_per_line && self->frame <= self->frames_per_line + self->max_attack_frame)) {
+            self->frame = (self->frame + 0.05);
+            player_attack(self);
+        }
     }
     else {
+        self->frame = (self->frame + 0.05);
+        if ((SDL_GameControllerGetButton(self->controller,
+            SDL_CONTROLLER_BUTTON_RIGHTSHOULDER) && self->ammo>0) || 
+            (self->frame >= self->frames_per_line && self->frame <= self->frames_per_line + self->max_attack_frame)) player_attack(self);
+        else if (self->frame >= self->max_walk_frame)self->frame = 0;
         vector2d_set_magnitude(&movement, 2);
         vector2d_copy(self->velocity, movement);
     }
@@ -212,13 +264,20 @@ void player_update(Entity* self) {
     //slog("player health: %i", player.health);
 }
 
+void player_attack(Entity* self) {
+    if (self->frame < self->frames_per_line || self->frame > self->frames_per_line + self->max_attack_frame && SDL_GameControllerGetButton(self->controller,
+        SDL_CONTROLLER_BUTTON_RIGHTSHOULDER))self->frame = self->frames_per_line + 1;
+    if (self->frame == self->frames_per_line + 1)bullet_new(vector2d(self->position.x-self->draw_offset.x, self->position.y-self->draw_offset.y), self->crosshair_position, self->rotation.z);
+
+   // slog("attack frame: %f", self->frame);
+}
+
 
 Vector2D get_crosshair_position(Entity* self) {
     return self->crosshair_position;
 }
 
 Entity* player_new(Vector2D position, SDL_GameController* gameController)
-
 {
     Entity* ent;
     ent = entity_new();
@@ -228,14 +287,20 @@ Entity* player_new(Vector2D position, SDL_GameController* gameController)
         return NULL;
     }
     ent->controller = gameController;
-    ent->sprite = gf2d_sprite_load_all("images/space_bug_top.png", 128, 128, 16);
+    ent->sprite = gf2d_sprite_load_all("images/player_walk.png", 32, 32, 8);
     ent->think = player_think;
     ent->update = player_update;
-    ent->draw_offset.x = -64;
-    ent->draw_offset.y = -64;
-    ent->rotation.x = 64;
-    ent->rotation.y = 64;
+    ent->draw_scale.x = 2;
+    ent->draw_scale.y = 2;
+    ent->draw_offset.x = -16;
+    ent->draw_offset.y = -16;
+    ent->rotation.x = 16;
+    ent->rotation.y = 16;
+    ent->max_walk_frame = 8;
+    ent->max_attack_frame = 0;
+    ent->frames_per_line = 8;
     ent->health = 100;
+    ent->ammo = 30;
     ent->entity = PLAYER;
     slog("player ent type: %i", ent->entity);
     //if (ent->entity != PLAYER) slog("this works");

@@ -65,7 +65,7 @@ Entity *entity_new()
             entity_manager.entity_list[i].draw_scale.x = 1;
             entity_manager.entity_list[i].draw_scale.y = 1;
 			entity_manager.current_ent_total++;
-			slog("total ents: %i", entity_manager.current_ent_total);
+			//slog("total ents: %i", entity_manager.current_ent_total);
             return &entity_manager.entity_list[i];
         }
     }
@@ -180,6 +180,14 @@ void check_collisions() {
 					slog("collision %i, %i", i, j);
 					player_set_stats(&entity_manager.entity_list[i], entity_manager.entity_list[j].pickup);
 					entity_free(&entity_manager.entity_list[j]);
+				}
+				else if ((entity_manager.entity_list[i].entity == PLAYER && entity_manager.entity_list[j].entity == WEAPON)) {
+					if (SDL_GameControllerGetButton(entity_manager.entity_list[i].controller,
+						SDL_CONTROLLER_BUTTON_A)) {
+						slog("collision %i, %i", i, j);
+							player_set_weapon(&entity_manager.entity_list[i], entity_manager.entity_list[j].weapon);
+							entity_free(&entity_manager.entity_list[j]);
+					}
 				}
 				//vector2d_clear(entity_manager.entity_list[i].velocity);
 				//vector2d_clear(entity_manager.entity_list[j].velocity);

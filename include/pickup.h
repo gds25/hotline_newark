@@ -37,4 +37,6 @@ void pickup_set_bounding_box(Entity* self);
  */
 void on_player_pickup(Entity* self);
 
+Entity* weapon_new(Vector2D position, int weaponType, char* filename);
+
 #endif

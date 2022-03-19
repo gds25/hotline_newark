@@ -47,7 +47,7 @@ void player_on_death(Entity* self);
 * @brief change attack animation frame and calculate weapon collision points
 * @param self the player entity
 */
-void player_shoot(Entity* self);
+void player_attack(Entity* self);
 
 /**
 * @brief get player position
@@ -94,5 +94,7 @@ void player_set_pause_state(Entity* self);
 Vector2D get_crosshair_position(Entity* self);
 
 void player_set_stats(Entity* self, int pickupType);
+
+void player_set_weapon(Entity* self, int weaponType);
 
 #endif

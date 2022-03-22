@@ -16,6 +16,9 @@ Entity* enemy_new(Vector2D position, int enemyType) {
         slog("no space for bugs");
         return NULL;
     }
+
+    //TODO: set enemy stats based off enemy type in json
+
     ent->sprite = gf2d_sprite_load_all("images/enemy.png", 128, 128, 6);
     ent->entity = ENEMY;
     ent->enemyType = enemyType;
@@ -25,7 +28,8 @@ Entity* enemy_new(Vector2D position, int enemyType) {
     ent->draw_offset.y = -64;
     ent->rotation.x = 64;
     ent->rotation.y = 64;
-    ent->ammo = 1;
+    ent->ammo = 30;
+    ent->health = 100;
 
     slog("enemy ent type: %i", ent->entity);
     //ent->rotation.z = 
@@ -89,7 +93,7 @@ void enemy_attack(Entity* self, Vector2D playerPos) {
     //if (self->frame >= 6 * (self->enemyType) + 3 && self->frame >= 6 * (self->enemyType) + 3.01) {
     //    slog("here");
     if (self->ammo > 0) {
-        bullet_new(self->position, playerPos, self->rotation.z);
+        bullet_new(self->position, playerPos, self->rotation.z, 1, self->damage);
         self->ammo--;
     }
        

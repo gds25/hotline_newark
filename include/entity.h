@@ -27,12 +27,15 @@ typedef struct ENTITY_S
 
     enum entType { PLAYER, ENEMY, PICKUP, WEAPON, BULLET } entity;
     enum pickupType { HEALTH, ARMOR, AMMO, SPEED, INVIS } pickup; /**<ONLY USED IN PICKUP.H - specifies pickup type*/
-    enum weaponType{ BAT, PISTOL, SHOTGUN, UZI, MG} weapon; /**<ONLY USED IN PICKUP.H - specifies weapon type*/
+    enum weaponType{ BAT, PISTOL, SHOTGUN, UZI, MG } weapon; /**<ONLY USED IN PICKUP.H - specifies weapon type*/
+    enum bulletType{ FOR, AGAINST } bullet; /**<ONLY USED IN PICKUP.H - specifies weapon type*/
     
     Uint32 health;
     Uint32 armor;
     Uint32 damage;
     Uint32 ammo;
+    Uint32 rounds;
+    Uint32 max_ammo;
 
     Uint8 isStatic;
     Uint8 isPlayer; //is entity the player ent

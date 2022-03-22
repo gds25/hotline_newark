@@ -34,7 +34,7 @@ Entity* pickup_new(Vector2D position, int pickupType, char *filename) {
     return ent;
 }
 
-Entity* weapon_new(Vector2D position, int weaponType, char *filename) {
+Entity* weapon_new(Vector2D position, int weaponType, int ammo, int rounds, int damage, char* filename) {
     Entity* ent;
     ent = entity_new();
     if (!ent)
@@ -54,6 +54,11 @@ Entity* weapon_new(Vector2D position, int weaponType, char *filename) {
 
     ent->weapon = weaponType;
     ent->entity = WEAPON;
+
+    ent->damage = damage;
+
+    ent->ammo = ammo;
+    ent->rounds = rounds;
 
     slog("pickup ent type: %d", ent->entity);
 

@@ -176,18 +176,24 @@ void check_collisions() {
 				entity_manager.entity_list[i].maxs.x >= entity_manager.entity_list[j].mins.x &&
 				entity_manager.entity_list[i].maxs.y >= entity_manager.entity_list[j].mins.y) {
 				//slog("collision %i, %i", i, j);
-				if ((entity_manager.entity_list[i].entity == PLAYER && entity_manager.entity_list[j].entity == PICKUP)) {
+				if (entity_manager.entity_list[i].entity == PLAYER && entity_manager.entity_list[j].entity == PICKUP) {
 					slog("collision %i, %i", i, j);
 					player_set_stats(&entity_manager.entity_list[i], entity_manager.entity_list[j].pickup);
 					entity_free(&entity_manager.entity_list[j]);
 				}
-				else if ((entity_manager.entity_list[i].entity == PLAYER && entity_manager.entity_list[j].entity == WEAPON)) {
+				else if (entity_manager.entity_list[i].entity == PLAYER && entity_manager.entity_list[j].entity == WEAPON) {
 					if (SDL_GameControllerGetButton(entity_manager.entity_list[i].controller,
 						SDL_CONTROLLER_BUTTON_A)) {
 						slog("collision %i, %i", i, j);
-							player_set_weapon(&entity_manager.entity_list[i], entity_manager.entity_list[j].weapon);
+							player_set_weapon(&entity_manager.entity_list[i], entity_manager.entity_list[j].weapon, entity_manager.entity_list[j].ammo, entity_manager.entity_list[j].rounds, entity_manager.entity_list[j].damage);
 							entity_free(&entity_manager.entity_list[j]);
 					}
+				}
+				else if (entity_manager.entity_list[i].entity == ENEMY && entity_manager.entity_list[j].bullet == FOR && entity_manager.entity_list[j].entity == BULLET) {
+						//slog("collision %i, %i", i, j);
+					entity_manager.entity_list[i].health -= entity_manager.entity_list[j].damage;
+						slog("health %i", entity_manager.entity_list[i].health);
+				    	entity_free(&entity_manager.entity_list[j]);
 				}
 				//vector2d_clear(entity_manager.entity_list[i].velocity);
 				//vector2d_clear(entity_manager.entity_list[j].velocity);
@@ -195,110 +201,7 @@ void check_collisions() {
 
 		}
 	}
-			/*if (entity_manager.entity_list[i].isPlayer && entity_manager.entity_list[j].isMonster) {
-				//slog("here");
-				if (entity_manager.entity_list[i].attackFrame > 4 && entity_manager.entity_list[i].attackFrame < 11 && !entity_manager.entity_list[j].attackedThisSwing) {
-					if (entity_manager.entity_list[i].maxWeaponAABB.x >= entity_manager.entity_list[j].minAABB.x &&
-						entity_manager.entity_list[i].maxWeaponAABB.y >= entity_manager.entity_list[j].minAABB.y &&
-						entity_manager.entity_list[i].maxWeaponAABB.z >= entity_manager.entity_list[j].minAABB.z &&
-						entity_manager.entity_list[i].minWeaponAABB.x <= entity_manager.entity_list[j].maxAABB.x &&
-						entity_manager.entity_list[i].minWeaponAABB.y <= entity_manager.entity_list[j].maxAABB.y &&
-						entity_manager.entity_list[i].minWeaponAABB.z <= entity_manager.entity_list[j].maxAABB.z) {
-						entity_manager.entity_list[j].attackedThisSwing = 1;
-						entity_manager.entity_list[j].health -= entity_manager.entity_list[i].damage;
-						slog("damaged enemy; enemy health: %i", entity_manager.entity_list[j].health);
-					}
-				}
-				else if (entity_manager.entity_list[i].attackFrame > 10 || (entity_manager.entity_list[i].character == 3 && entity_manager.entity_list[i].attackFrame > 8)) entity_manager.entity_list[j].attackedThisSwing = 0;
-			}
-			else if (entity_manager.entity_list[i].isMonster && entity_manager.entity_list[j].isPlayer) {
-				if (entity_manager.entity_list[i].attackFrame > 4 && entity_manager.entity_list[i].attackFrame < 11 && !entity_manager.entity_list[i].hasAttacked) {
-					if (entity_manager.entity_list[i].maxWeaponAABB.x >= entity_manager.entity_list[j].minAABB.x &&
-						entity_manager.entity_list[i].maxWeaponAABB.y >= entity_manager.entity_list[j].minAABB.y &&
-						entity_manager.entity_list[i].maxWeaponAABB.z >= entity_manager.entity_list[j].minAABB.z &&
-						entity_manager.entity_list[i].minWeaponAABB.x <= entity_manager.entity_list[j].maxAABB.x &&
-						entity_manager.entity_list[i].minWeaponAABB.y <= entity_manager.entity_list[j].maxAABB.y &&
-						entity_manager.entity_list[i].minWeaponAABB.z <= entity_manager.entity_list[j].maxAABB.z) {
-						entity_manager.entity_list[i].hasAttacked = 1;
-						entity_manager.entity_list[j].health = MAX(1, entity_manager.entity_list[j].health - (entity_manager.entity_list[i].damage / entity_manager.entity_list[j].armor));
-
-						slog("you took damage! health is now: %i", entity_manager.entity_list[j].health);
-						/*slog("player pos x, y, z: %f, %f, %f", entity_manager.entity_list[i].position.x, entity_manager.entity_list[i].position.y, entity_manager.entity_list[i].position.z);
-						slog("weapon max AABB x, y, z: %f, %f, %f, min AABB x, y, z: %f, %f, %f", entity_manager.entity_list[i].maxWeaponAABB.x, entity_manager.entity_list[i].maxWeaponAABB.y, entity_manager.entity_list[i].maxWeaponAABB.z, entity_manager.entity_list[i].minWeaponAABB.x, entity_manager.entity_list[i].minWeaponAABB.y, entity_manager.entity_list[i].minWeaponAABB.z);
-						slog("monster max AABB x, y, z: %f, %f, %f, min AABB x, y, z: %f, %f, %f", entity_manager.entity_list[j].maxAABB.x, entity_manager.entity_list[j].maxAABB.y, entity_manager.entity_list[j].maxAABB.z, entity_manager.entity_list[j].minAABB.x, entity_manager.entity_list[j].minAABB.y, entity_manager.entity_list[j].minAABB.z);
-						slog("monster pos x, y, z: %f, %f, %f", entity_manager.entity_list[j].position.x, entity_manager.entity_list[j].position.y, entity_manager.entity_list[j].position.z);*/
-			/* }
-				}
-				else if (entity_manager.entity_list[i].attackFrame > 10) entity_manager.entity_list[i].hasAttacked = 0;
-			}
-
-			else if (entity_manager.entity_list[i].maxAABB.x >= entity_manager.entity_list[j].minAABB.x &&
-				entity_manager.entity_list[i].maxAABB.y >= entity_manager.entity_list[j].minAABB.y &&
-				entity_manager.entity_list[i].maxAABB.z >= entity_manager.entity_list[j].minAABB.z &&
-				entity_manager.entity_list[i].minAABB.x <= entity_manager.entity_list[j].maxAABB.x &&
-				entity_manager.entity_list[i].minAABB.y <= entity_manager.entity_list[j].maxAABB.y &&
-				entity_manager.entity_list[i].minAABB.z <= entity_manager.entity_list[j].maxAABB.z) {
-				//slog("hit entities %i, %i", i, j);
-				//slog("i max AABB x, y, z: %f, %f, %f, min AABB x, y, z: %f, %f, %f", entity_manager.entity_list[i].maxAABB.x, entity_manager.entity_list[i].maxAABB.y, entity_manager.entity_list[i].maxAABB.z, entity_manager.entity_list[i].minAABB.x, entity_manager.entity_list[i].minAABB.y, entity_manager.entity_list[i].minAABB.z);
-				//slog("j max AABB x, y, z: %f, %f, %f, min AABB x, y, z: %f, %f, %f", entity_manager.entity_list[j].maxAABB.x, entity_manager.entity_list[j].maxAABB.y, entity_manager.entity_list[j].maxAABB.z, entity_manager.entity_list[j].minAABB.x, entity_manager.entity_list[j].minAABB.y, entity_manager.entity_list[j].minAABB.z);
-				if (entity_manager.entity_list[i].isFireball && !entity_manager.entity_list[j].isPlayer) {
-					if (entity_manager.entity_list[j].isMonster) {
-						entity_manager.entity_list[j].health -= 20;
-						//slog("damaged enemy; enemy health: %i", entity_manager.entity_list[j].health);
-					}
-					entity_free(&entity_manager.entity_list[i]);
-				}
-				else if (entity_manager.entity_list[j].isFireball && !entity_manager.entity_list[i].isPlayer) {
-					if (entity_manager.entity_list[i].isMonster) {
-						entity_manager.entity_list[i].health -= 20;
-						//slog("damaged enemy; enemy health: %i", entity_manager.entity_list[i].health);
-					}
-					entity_free(&entity_manager.entity_list[j]);
-				}
-				else if (entity_manager.entity_list[j].isHealth && entity_manager.entity_list[i].isPlayer && entity_manager.entity_list[i].health < 100) {
-					entity_free(&entity_manager.entity_list[j]);
-
-					entity_manager.entity_list[i].health = MIN(100, entity_manager.entity_list[i].health + 20);
-					slog("picked up health pack, health is now: %i", entity_manager.entity_list[i].health);
-				}
-				else if (!entity_manager.entity_list[i].isStatic) {
-					entity_manager.entity_list[i].futurePosition.x = entity_manager.entity_list[i].position.x - (0.01 * cos(entity_manager.entity_list[i].rotation.z));
-					entity_manager.entity_list[i].futurePosition.y = entity_manager.entity_list[i].position.y + (0.01 * sin(entity_manager.entity_list[i].rotation.z));
-					entity_manager.entity_list[i].futurePosition.z = entity_manager.entity_list[i].position.z;
-				}
-
-				//entity_manager.entity_list[i].position.x -= entity_manager.entity_list[i].velocity.x * (0.10 * sin(entity_manager.entity_list[i].rotation.z));
-				//entity_manager.entity_list[i].position.y += entity_manager.entity_list[i].velocity.y * (0.10 * cos(entity_manager.entity_list[i].rotation.z));
-				//entity_manager.entity_list[i].position.z;
-			}
-			else if (entity_manager.entity_list[i].futurePosition.x < 295 && entity_manager.entity_list[i].futurePosition.y < 295 && entity_manager.entity_list[i].futurePosition.x > -295 && entity_manager.entity_list[i].futurePosition.y > -295) {
-				if (entity_manager.entity_list[i].position.x > entity_manager.entity_list[i].futurePosition.x && entity_manager.entity_list[i].futurePosition.x < 10 && entity_manager.entity_list[i].futurePosition.x > -10 && !(entity_manager.entity_list[i].futurePosition.y < 273 && entity_manager.entity_list[i].futurePosition.y > 176) && !(entity_manager.entity_list[i].futurePosition.y > -273 && entity_manager.entity_list[i].futurePosition.y < -176)) {
-					entity_manager.entity_list[i].futurePosition.x += 1; entity_manager.entity_list[i].position.x += 1;
-				}
-				else if (entity_manager.entity_list[i].position.x <  entity_manager.entity_list[i].futurePosition.x && entity_manager.entity_list[i].futurePosition.x > -10 && entity_manager.entity_list[i].futurePosition.x < 10 && !(entity_manager.entity_list[i].futurePosition.y < 273 && entity_manager.entity_list[i].futurePosition.y > 176) && !(entity_manager.entity_list[i].futurePosition.y > -273 && entity_manager.entity_list[i].futurePosition.y < -176)) {
-					entity_manager.entity_list[i].futurePosition.x -= 1; entity_manager.entity_list[i].position.x -= 1;
-				}
-				else if (entity_manager.entity_list[i].position.y > entity_manager.entity_list[i].futurePosition.y && entity_manager.entity_list[i].futurePosition.y < 10 && entity_manager.entity_list[i].futurePosition.y > -10 && !(entity_manager.entity_list[i].futurePosition.x > -273 && entity_manager.entity_list[i].futurePosition.x < -176)) {
-					entity_manager.entity_list[i].futurePosition.y += 1; entity_manager.entity_list[i].position.y += 1;
-				}
-				else if (entity_manager.entity_list[i].position.x < entity_manager.entity_list[i].futurePosition.y && entity_manager.entity_list[i].futurePosition.y > -10 && entity_manager.entity_list[i].futurePosition.y < 10 && !(entity_manager.entity_list[i].futurePosition.x > -273 && entity_manager.entity_list[i].futurePosition.x < -176)) {
-					entity_manager.entity_list[i].futurePosition.y -= 1; entity_manager.entity_list[i].position.y -= 1;
-				}
-				else {
-					entity_manager.entity_list[i].position.x = entity_manager.entity_list[i].futurePosition.x;
-					entity_manager.entity_list[i].position.y = entity_manager.entity_list[i].futurePosition.y;
-					entity_manager.entity_list[i].position.z = entity_manager.entity_list[i].futurePosition.z;
-				}
-			}
-			else {
-				if (entity_manager.entity_list[i].futurePosition.x > 295) { entity_manager.entity_list[i].futurePosition.x -= 10; entity_manager.entity_list[i].position.x -= 10; }
-				if (entity_manager.entity_list[i].futurePosition.y > 295) { entity_manager.entity_list[i].futurePosition.y -= 10; entity_manager.entity_list[i].position.y -= 10; }
-				if (entity_manager.entity_list[i].futurePosition.x < -295) { entity_manager.entity_list[i].futurePosition.x += 10; entity_manager.entity_list[i].position.x += 10; }
-				if (entity_manager.entity_list[i].futurePosition.y < -295) { entity_manager.entity_list[i].futurePosition.y += 10; entity_manager.entity_list[i].position.y += 10; }
-
-			}
-		}
-	}*/
+			
 }
 
 // eof

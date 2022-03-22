@@ -6,7 +6,13 @@
 #include "player.h"
 #include "bullet.h"
 
-
+//TODO
+//player on_death : bring to main menu
+//enemy on_death : drop weponns
+//enemy sprites
+//spwan different enemies
+//set boundaries for world/tile collisions
+//user interface
 static Entity player = { 0 };
 
 Entity get_player() {
@@ -53,7 +59,7 @@ void player_set_stats(Entity* self, int pickupType) {
     }
 }
 
-void player_set_weapon(Entity * self, int weaponType) {
+void player_set_weapon(Entity * self, int weaponType, int ammo, int rounds, int damage) {
     switch(weaponType) {
     case BAT:
         self->sprite = gf2d_sprite_load_all("images/player_bat.png", 32, 32, 9);
@@ -64,6 +70,7 @@ void player_set_weapon(Entity * self, int weaponType) {
         self->max_walk_frame = 8;
         self->max_attack_frame = 9;
         self->frames_per_line = 9;
+        self->max_ammo = -1;
         break;
     case PISTOL:
         self->sprite = gf2d_sprite_load_all("images/player_pistol(1).png", 44, 32, 8);
@@ -74,6 +81,7 @@ void player_set_weapon(Entity * self, int weaponType) {
         self->max_walk_frame = 8;
         self->max_attack_frame = 2;
         self->frames_per_line = 8;
+        self->max_ammo = 8;
         break;
     case SHOTGUN:
         self->sprite = gf2d_sprite_load_all("images/player_shotgun.png", 44, 32, 12);
@@ -84,6 +92,7 @@ void player_set_weapon(Entity * self, int weaponType) {
         self->max_walk_frame = 8;
         self->max_attack_frame = 12;
         self->frames_per_line = 12;
+        self->max_ammo = 4;
         break;
     case UZI:
         self->sprite = gf2d_sprite_load_all("images/player_uzi.png", 44, 32, 8);
@@ -94,6 +103,7 @@ void player_set_weapon(Entity * self, int weaponType) {
         self->max_walk_frame = 8;
         self->max_attack_frame = 2;
         self->frames_per_line = 8;
+        self->max_ammo = 30;
         break;
     case MG:
         self->sprite = gf2d_sprite_load_all("images/player_mg.png", 44, 32, 8);
@@ -104,10 +114,15 @@ void player_set_weapon(Entity * self, int weaponType) {
         self->max_walk_frame = 8;
         self->max_attack_frame = 2;
         self->frames_per_line = 8;
+        self->max_ammo = 20;
         break;
     default:
         break;
     }
+    self->ammo = ammo;
+    self->rounds = rounds;
+    self->damage = damage;
+    slog("player damage: %i", self->damage);
 }
 
 void player_set_bounding_box(Entity* self) {
@@ -267,8 +282,12 @@ void player_update(Entity* self) {
 void player_attack(Entity* self) {
     if (self->frame < self->frames_per_line || self->frame > self->frames_per_line + self->max_attack_frame && SDL_GameControllerGetButton(self->controller,
         SDL_CONTROLLER_BUTTON_RIGHTSHOULDER))self->frame = self->frames_per_line + 1;
-    if (self->frame == self->frames_per_line + 1)bullet_new(vector2d(self->position.x-self->draw_offset.x, self->position.y-self->draw_offset.y), self->crosshair_position, self->rotation.z);
-
+    if (self->frame == self->frames_per_line + 1)
+    {
+        bullet_new(vector2d(self->position.x - self->draw_offset.x, self->position.y - self->draw_offset.y), self->crosshair_position, self->rotation.z, 0, self->damage);
+        self->ammo--;
+        self->rounds--;
+    }
    // slog("attack frame: %f", self->frame);
 }
 

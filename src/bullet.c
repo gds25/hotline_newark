@@ -5,7 +5,7 @@
 #include "player.h"
 #include "bullet.h"
 
-Entity* bullet_new(Vector2D position, Vector2D goalPos, float rotation) {
+Entity* bullet_new(Vector2D position, Vector2D goalPos, float rotation, int bulletType, int damage) {
     Entity* ent;
     Vector2D movement;
     ent = entity_new();
@@ -18,11 +18,13 @@ Entity* bullet_new(Vector2D position, Vector2D goalPos, float rotation) {
     ent->think = bullet_think;
     ent->update = bullet_update;
     ent->entity = BULLET;
+    ent->bullet = bulletType;
     ent->draw_offset.x = -8;
     ent->draw_offset.y = -8;
     ent->rotation.x = 8;
     ent->rotation.y = 8;
     ent->rotation.z = rotation-90;
+    ent->damage = damage;
 
     movement.x = goalPos.x - position.x;
     movement.y = goalPos.y - position.y;
@@ -30,7 +32,7 @@ Entity* bullet_new(Vector2D position, Vector2D goalPos, float rotation) {
 
     vector2d_set_magnitude(&movement, 1);
     vector2d_copy(ent->velocity, movement);
-    slog("created bullet");
+    //slog("created bullet");
     //slog("velocity: %f, %f", ent->velocity.x, ent->velocity.y);
     return ent;
 }
@@ -55,6 +57,8 @@ void bullet_think(Entity* self) {
 */
 void bullet_update(Entity* self) {
     vector2d_add(self->position, self->position, self->velocity);
+    vector2d_copy(self->mins, self->position);
+    vector2d_copy(self->maxs, self->position);
     //slog("velocity: %f, %f", self->velocity.x, self->velocity.y);
     //slog("position: %f, %f", self->position.x, self->position.y);
 }

@@ -9,7 +9,7 @@
  * @param rotation direction in which the bullet will travel (radian angle around origin)
  * @return NULL on error, or a bullet entity pointer on success
  */
-Entity* bullet_new(Vector2D position, Vector2D goalPos, float rotation);
+Entity* bullet_new(Vector2D position, Vector2D goalPos, float rotation, enum bulletType bullet, int damage);
 
 /**
 * @brief bullet logic

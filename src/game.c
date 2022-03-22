@@ -86,11 +86,11 @@ int main(int argc, char * argv[])
     speed = pickup_new(vector2d(400, 100), 3, "images/speed.png");
     invis = pickup_new(vector2d(500, 100), 4, "images/invisibility.png");
 
-    bat = weapon_new(vector2d(100, 200), 0, "images/bat.png");
-    pistol = weapon_new(vector2d(100, 300), 1, "images/pistol.png");
-    shotgun = weapon_new(vector2d(100, 400), 2, "images/shotgun.png");
-    uzi = weapon_new(vector2d(100, 500), 3, "images/uzi.png");
-    mg = weapon_new(vector2d(100, 600), 4, "images/machinegun.png");
+    bat = weapon_new(vector2d(100, 200), 0, -1, -1, 20, "images/bat.png");
+    pistol = weapon_new(vector2d(100, 300), 1, 8, 24, 20, "images/pistol.png");
+    shotgun = weapon_new(vector2d(100, 400), 2, 4, 12, 80, "images/shotgun.png");
+    uzi = weapon_new(vector2d(100, 500), 3, 30, 120, 10, "images/uzi.png");
+    mg = weapon_new(vector2d(100, 600), 4, 20, 60, 30, "images/machinegun.png");
 
     mouse = gf2d_sprite_load_all("images/pointer.png",32,32,16);
     crosshair = gf2d_sprite_load_image("images/crosshair.png");

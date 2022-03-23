@@ -3,6 +3,7 @@
 #include "gfc_types.h"
 
 #include "player.h"
+#include "pickup.h"
 #include "bullet.h"
 #include "enemy.h"
 
@@ -17,21 +18,46 @@ Entity* enemy_new(Vector2D position, int enemyType) {
         return NULL;
     }
 
-    //TODO: set enemy stats based off enemy type in json
+    SJson* json, * pjson, * mjson;
+    char* enemy[8];
+    snprintf(enemy, 8, "%i", enemyType);
 
-    ent->sprite = gf2d_sprite_load_all("images/enemy.png", 128, 128, 6);
-    ent->entity = ENEMY;
+    slog("enemytype %s", enemy);
+
+    json = sj_load("config/enemy.json");
+    if (!json)
+    {
+        slog("failed to load json file config/enemy.json for enemy stats");
+        free(ent);
+        return NULL;
+    }
+    pjson = sj_object_get_value(json, enemy);
+    if (!pjson)
+    {
+        slog("failed to find enemy object in config/enemy.json");
+        free(ent);
+        sj_free(json);
+        return NULL;
+    }
+    ent->health = sj_get_integer_value(sj_object_get_value(pjson, "health"), NULL);
+    ent->ammo = sj_get_integer_value(sj_object_get_value(pjson, "ammo"), NULL);
+    ent->rounds = sj_get_integer_value(sj_object_get_value(pjson, "rounds"), NULL);
+    ent->max_ammo = sj_get_integer_value(sj_object_get_value(pjson, "max_ammo"), NULL);
+    ent->damage = sj_get_integer_value(sj_object_get_value(pjson, "damage"), NULL);
+    ent->speed = sj_get_integer_value(sj_object_get_value(pjson, "speed"), NULL);
+    ent->sprite = gf2d_sprite_load_all(sj_get_string_value(sj_object_get_value(pjson, "sprite")), 32, 32, 8);
     ent->enemyType = enemyType;
+    ent->draw_offset.x = -16;
+    ent->draw_offset.y = -16;
+    ent->rotation.x = 8;
+    ent->rotation.y = 8;
+    ent->entity = ENEMY;
+
     ent->think = enemy_think;
     ent->update = enemy_update;
-    ent->draw_offset.x = -64;
-    ent->draw_offset.y = -64;
-    ent->rotation.x = 64;
-    ent->rotation.y = 64;
-    ent->ammo = 30;
-    ent->health = 100;
+    //TODO: set enemy stats based off enemy type in json
 
-    slog("enemy ent type: %i", ent->entity);
+    slog("enemy health: %i", ent->health);
     //ent->rotation.z = 
     vector2d_copy(ent->position, position);
     return ent;
@@ -50,13 +76,17 @@ void enemy_think(Entity* self) {
     d = ((self->position.x - playerPos.x) * (self->position.x - playerPos.x)) + ((self->position.y - playerPos.y) * (self->position.y - playerPos.y));
     //if (d > 500*self->enemyType)enemy_chase(self, playerPos);
     //else 
-        enemy_attack(self, playerPos);
+    enemy_chase(self, playerPos);
 }
 
 void enemy_update(Entity* self) {
     vector2d_add(self->position, self->position, self->velocity);
     enemy_set_bounding_box(self);
-    //slog("%f, %f", self->position.x, self->position.y);
+    //slog("%i", self->health);
+    if (self->health < 0) {
+        //slog("health %i", self->health);
+        enemy_on_death(self);
+    }
 }
 
 
@@ -71,6 +101,7 @@ void enemy_chase(Entity* self, Vector2D playerPos) {
     //slog("%f, %f", self->rotation.z);
     vector2d_set_magnitude(&direction, 1);
     vector2d_copy(self->velocity, direction);
+    vector2d_scale(self->velocity, self->velocity, self->speed);
     //slog("%f, %f", playerPos.x, playerPos.y);
 }
 
@@ -91,20 +122,17 @@ void enemy_attack(Entity* self, Vector2D playerPos) {
     self->rotation.z = angle;
 
     //if (self->frame >= 6 * (self->enemyType) + 3 && self->frame >= 6 * (self->enemyType) + 3.01) {
-    //    slog("here");
+       //slog("here");
     if (self->ammo > 0) {
         bullet_new(self->position, playerPos, self->rotation.z, 1, self->damage);
         self->ammo--;
     }
-       
+}
 
-   // slog("frame: %f", self->frame);
-
-  //  vector2d_scale(self->velocity, self->velocity, 0.5);
-  //  if (vector2d_magnitude(self->velocity) < 0.05)
-  //  {
-  //      vector2d_clear(self->velocity);
-  //  }
+void enemy_on_death(Entity *self) {
+    slog("here");
+    weapon_new(self->position, self->enemyType, self->ammo, self->rounds, self->damage, "images/pistol.png");
+    entity_free(self);
 }
 
 Vector2D enemy_get_bounding_box() {

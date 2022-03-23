@@ -3,6 +3,7 @@
 #include "simple_json.h"
 #include "tile_map.h"
 
+
 TileMap *tilemap_new()
 {
     TileMap *map;
@@ -112,5 +113,35 @@ void tilemap_draw(TileMap *map)
     }
 }
 
+void tilemap_collision(TileMap *map, Entity* ent)
+{
+    if (!map)return;
+    if (!map->tileset)return;
+    if (!map->tilemap)return;
+    for (int i = 0; i < map->tilemap_count; i++)
+    {
+        if (map->tilemap[i]) {
+            if ((i % map->tilemap_width) * map->tileset->tile_width + (map->tileset->tile_width) >= ent->mins.x &&
+                (i % map->tilemap_width) * map->tileset->tile_width <= ent->maxs.x &&
+                (i / map->tilemap_width) * map->tileset->tile_height + (map->tileset->tile_height) >= ent->mins.y &&
+                (i / map->tilemap_width) * map->tileset->tile_height <= ent->maxs.y) {
+                /*slog("max tile x %i", (i % map->tilemap_width) * map->tileset->tile_width + (map->tileset->tile_width / 2));
+                slog("min player x %f", ent->mins.x); 
+                slog("min tile x %i", (i % map->tilemap_width) * map->tileset->tile_width - (map->tileset->tile_width / 2));
+                slog("max player x %f", ent->maxs.x);
+                */
+                Vector2D direction;
+                direction.x = (i % map->tilemap_width) * map->tileset->tile_width - ent->position.x;
+                direction.y = (i / map->tilemap_width) * map->tileset->tile_height - ent->position.y;
+
+                vector2d_set_magnitude(&direction, -1);
+                vector2d_copy(ent->velocity, direction);
+                slog("velocity x, y = %f     %f", ent->velocity.x, ent->velocity.y);
+                //ent->velocity.x = -ent->velocity.x;
+                ///ent->velocity.y = -ent->velocity.y;
+            }
+        }
+    }
+}
 
 // eol

@@ -13,6 +13,12 @@ Entity* enemy_new(Vector2D position, int enemyType);
 
 
 /**
+* @brief enemy logic on death
+* @param self the entity in question
+*/
+void enemy_on_death(Entity* self);
+
+/**
 * @brief enemy entity logic
 * @param self the entity in question
 */

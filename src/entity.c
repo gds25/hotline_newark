@@ -4,6 +4,8 @@
 #include "entity.h"
 #include "player.h"
 
+#include "tile_map.h"
+
 
 typedef struct
 {
@@ -176,7 +178,10 @@ void check_collisions() {
 				entity_manager.entity_list[i].maxs.x >= entity_manager.entity_list[j].mins.x &&
 				entity_manager.entity_list[i].maxs.y >= entity_manager.entity_list[j].mins.y) {
 				//slog("collision %i, %i", i, j);
-				if (entity_manager.entity_list[i].entity == PLAYER && entity_manager.entity_list[j].entity == PICKUP) {
+                //if (entity_manager.entity_list[i].entity == PLAYER || entity_manager.entity_list[i].entity == ENEMY) {
+               //     tilemap_collision(&entity_manager.entity_list[i]);
+                //}
+			    if (entity_manager.entity_list[i].entity == PLAYER && entity_manager.entity_list[j].entity == PICKUP) {
 					slog("collision %i, %i", i, j);
 					player_set_stats(&entity_manager.entity_list[i], entity_manager.entity_list[j].pickup);
 					entity_free(&entity_manager.entity_list[j]);
@@ -192,9 +197,10 @@ void check_collisions() {
 				else if (entity_manager.entity_list[i].entity == ENEMY && entity_manager.entity_list[j].bullet == FOR && entity_manager.entity_list[j].entity == BULLET) {
 						//slog("collision %i, %i", i, j);
 					entity_manager.entity_list[i].health -= entity_manager.entity_list[j].damage;
-						slog("health %i", entity_manager.entity_list[i].health);
+						// slog("health %i", entity_manager.entity_list[i].health);
 				    	entity_free(&entity_manager.entity_list[j]);
 				}
+                
 				//vector2d_clear(entity_manager.entity_list[i].velocity);
 				//vector2d_clear(entity_manager.entity_list[j].velocity);
 			}

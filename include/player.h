@@ -62,6 +62,28 @@ Vector2D get_player_position();
 void set_player_position(Entity* self);
 
 /**
+* @brief get player health
+* @return player entity health
+*/
+int get_player_health();
+
+/**
+* @brief set player health (for UI)
+* @param self the player entity
+*/
+void set_player_health(Entity* self);
+
+int get_player_armor();
+
+void set_player_armor(Entity* self);
+
+void set_player_ammo(Entity* self);
+
+int get_player_ammo(); 
+
+int get_player_rounds();
+
+/**
  * @brief set bounding box cooridInates of PLayer entity
  * @param self the player entity
  */

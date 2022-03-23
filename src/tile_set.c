@@ -1,5 +1,6 @@
 #include "simple_logger.h"
 
+#include "entity.h"
 #include "tile_set.h"
 
 
@@ -137,7 +138,5 @@ void tile_set_draw(TileSet *tileset,Uint32 tile,Vector2D position)
         NULL,
         tile);
 }
-
-
 
 //eol

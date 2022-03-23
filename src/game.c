@@ -1,10 +1,12 @@
 #include <SDL.h>
+#include <stdio.h>
 
 #include "simple_logger.h"
 
 #include "gf2d_graphics.h"
 #include "gf2d_sprite.h"
 #include "gf2d_draw.h"
+#include "gf2d_font.h"
 
 #include "camera.h"
 
@@ -31,8 +33,7 @@ int main(int argc, char * argv[])
     Sprite* bat, *pistol, *shotgun, *uzi, *mg;
     Vector2D player_aabb;
     Vector2D enemy_aabb;
-    Sprite* enemy_bat;
-    Sprite* enemy_pistol;
+    Sprite* enemy_bat, *enemy_pistol, *enemy_shotgun, *enemy_uzi, *enemy_mg;
     Sprite* crosshair;
     Vector4D mouseColor = {255,100,255,200};
     TileMap *tilemap;
@@ -50,6 +51,7 @@ int main(int argc, char * argv[])
         0);
     gf2d_graphics_set_frame_delay(16);
     gf2d_sprite_init(1024);
+    gf2d_font_init("config/font.cfg");
     tile_set_manager_init(16);
     entity_manager_init(1024);
 
@@ -77,8 +79,8 @@ int main(int argc, char * argv[])
     }
 
     /*setup*/
-    sprite = gf2d_sprite_load_image("images/backgrounds/bg_flat.png");
-    player = player_new(vector2d(500, 300), controller);
+    sprite = gf2d_sprite_load_image("images/backgrounds/level_test.png");
+    player = player_new(vector2d(450, 250), controller);
 
     health = pickup_new(vector2d(100, 100), 0, "images/health.png");
     armor = pickup_new(vector2d(200, 100), 1, "images/armor.png");
@@ -94,8 +96,11 @@ int main(int argc, char * argv[])
 
     mouse = gf2d_sprite_load_all("images/pointer.png",32,32,16);
     crosshair = gf2d_sprite_load_image("images/crosshair.png");
-    enemy_bat = enemy_new(vector2d(1000,200), 1);
-    enemy_pistol = enemy_new(vector2d(800,500), 2);
+    enemy_bat = enemy_new(vector2d(1000,200), 0);
+    enemy_pistol = enemy_new(vector2d(800,500), 1);
+    enemy_shotgun = enemy_new(vector2d(400,500), 2);
+    enemy_uzi = enemy_new(vector2d(800,200), 3);
+    enemy_mg = enemy_new(vector2d(600,300), 4);
     tilemap = tilemap_load("levels/testlevel.json");
 
     /*main game loop*/
@@ -108,6 +113,7 @@ int main(int argc, char * argv[])
         mf+=0.1;
         if (mf >= 16.0)mf = 0;
         entity_manager_think_all();
+        tilemap_collision(tilemap, player);
         check_collisions();
         entity_manager_update_all();
         
@@ -135,6 +141,16 @@ int main(int argc, char * argv[])
                 NULL,
                 &mouseColor,
                 (int)mf);
+            //char ui_health[15];
+            char *ui[30];
+            int player_health = get_player_health();
+            //slog("health = %i", player_health);
+            //const char* UI = "Health";
+            snprintf(ui, 100, "Health : %i/100 Armor: %i/25 Ammo: %i/%i", get_player_health(), get_player_armor(), get_player_ammo(), get_player_rounds());
+            //free(&ui);
+            //snprintf(ui, 100, "Health : %i", get_player_health());
+            //memccpy(memccpy(src, "Health :", '\0', 100) - 1, num, '\0', 100);
+            gf2d_font_draw_line_tag(ui, FT_H4, gfc_color(255, 255, 255, 255), vector2d(10, 650));
         gf2d_grahics_next_frame();// render current draw frame and skip to the next frame
         
         if (keys[SDL_SCANCODE_ESCAPE])done = 1; // exit condition

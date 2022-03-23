@@ -1,0 +1,54 @@
+{
+  "0": {
+    "health": 70,
+    "damage": 20,
+	"ammo": 0,
+	"max_ammo": 0,
+	"rounds": 0,
+	"damage": 20,
+	"speed": 2,
+	"sprite": "images/enemy.png",
+	"weapon_sprite": "images/bat.png"
+  }  
+  "1": {
+    "health": 60,
+    "damage": 10,
+	"ammo": 8,
+	"max_ammo": 8,
+	"rounds": 24,
+	"damage": 10,
+	"speed": 1.5,
+	"sprite": "images/enemy_pistol.png",
+	"weapon_sprite": "images/pistol.png"
+  } 
+  "2": {
+    "health": 100,
+    "damage": 20,
+	"ammo": 4,
+	"max_ammo": 12,
+	"damage": 50,
+	"speed": 0.75,
+	"sprite": "images/enemy.png",
+	"weapon_sprite": "images/shotgun.png"
+  }  
+  "3": {
+    "health": 60,
+    "damage": 20,
+	"ammo": 30,
+	"max_ammo": 120,
+	"damage": 10,
+	"speed": 1.25,
+	"sprite": "images/enemy.png",
+	"weapon_sprite": "images/uzi.png"
+  }  
+  "4": {
+    "health": 75,
+    "damage": 20,
+	"ammo": 20,
+	"max_ammo": 60,
+	"damage": 30,
+	"speed": 1,
+	"sprite": "images/enemy_mg).png",
+	"weapon_sprite": "images/mg.png"
+  }
+}

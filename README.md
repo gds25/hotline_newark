@@ -11,11 +11,18 @@ Eliminate all enemies
 - 5 stealth mechanics (to be implemented)
 
 Controls: 
+
+
 The game currently requires a dual analog controller to play (PlayStation, XBox, and Switch controllers are all compatible) 
+
 Left Stick: move 
+
 Right Stick: rotate 
+
 Right Trigger: shoot 
+
 A(XBox)/X(PS): pick up weapon 
+
 Start: pause menu (also accessable with 'p' on keyboard)
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------

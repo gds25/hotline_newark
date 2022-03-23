@@ -9,7 +9,7 @@
 
 static Entity enemy = { 0 };
 
-Entity* enemy_new(Vector2D position, int enemyType) {
+Entity* enemy_new(Vector2D position, int enemyType, TileMap *map) {
     Entity* ent;
     ent = entity_new();
     if (!ent)
@@ -39,19 +39,37 @@ Entity* enemy_new(Vector2D position, int enemyType) {
         sj_free(json);
         return NULL;
     }
+    
     ent->health = sj_get_integer_value(sj_object_get_value(pjson, "health"), NULL);
     ent->ammo = sj_get_integer_value(sj_object_get_value(pjson, "ammo"), NULL);
     ent->rounds = sj_get_integer_value(sj_object_get_value(pjson, "rounds"), NULL);
     ent->max_ammo = sj_get_integer_value(sj_object_get_value(pjson, "max_ammo"), NULL);
     ent->damage = sj_get_integer_value(sj_object_get_value(pjson, "damage"), NULL);
     ent->speed = sj_get_integer_value(sj_object_get_value(pjson, "speed"), NULL);
+    ent->range = sj_get_integer_value(sj_object_get_value(pjson, "range"), NULL);
+    ent->max_walk_frame = sj_get_integer_value(sj_object_get_value(pjson, "max_walk_frame"), NULL);
+    ent->max_attack_frame = sj_get_integer_value(sj_object_get_value(pjson, "max_attack_frame"), NULL);
+    ent->frames_per_line = sj_get_integer_value(sj_object_get_value(pjson, "frames_per_line"), NULL);
+
+    //todo finish filling json with correct data
+    Sint32 frame_width;
+    Sint32 frame_height;
+    ent->draw_scale.x = 1.4545;
+    ent->draw_offset.y = 2;
+    ent->draw_offset.x = -22;
+    ent->draw_offset.y = -16;
+    ent->rotation.x = 22;
+    ent->rotation.x = 16;
+
     ent->sprite = gf2d_sprite_load_all(sj_get_string_value(sj_object_get_value(pjson, "sprite")), 32, 32, 8);
+
     ent->enemyType = enemyType;
-    ent->draw_offset.x = -16;
+    /*ent->draw_offset.x = -16;
     ent->draw_offset.y = -16;
     ent->rotation.x = 8;
-    ent->rotation.y = 8;
+    ent->rotation.y = 8;*/
     ent->entity = ENEMY;
+    ent->tileMap = map;
 
     ent->think = enemy_think;
     ent->update = enemy_update;
@@ -63,23 +81,56 @@ Entity* enemy_new(Vector2D position, int enemyType) {
     return ent;
 }
 
+void enemy_tilemap_collision(TileMap* map, Entity* ent)
+{
+    if (!map)return;
+    if (!map->tileset)return;
+    if (!map->tilemap)return;
+    for (int i = 0; i < map->tilemap_count; i++)
+    {
+        if (map->tilemap[i]) {
+            if ((i % map->tilemap_width) * map->tileset->tile_width + (map->tileset->tile_width) >= ent->mins.x &&
+                (i % map->tilemap_width) * map->tileset->tile_width <= ent->maxs.x &&
+                (i / map->tilemap_width) * map->tileset->tile_height + (map->tileset->tile_height) >= ent->mins.y &&
+                (i / map->tilemap_width) * map->tileset->tile_height <= ent->maxs.y) {
+
+                Vector2D direction;
+                direction.x = (i % map->tilemap_width) * map->tileset->tile_width - ent->position.x;
+                direction.y = (i / map->tilemap_width) * map->tileset->tile_height - ent->position.y;
+
+                vector2d_set_magnitude(&direction, -1);
+                vector2d_copy(ent->velocity, direction);
+                //slog("velocity x, y = %f     %f", ent->velocity.x, ent->velocity.y);
+                //ent->velocity.x = -ent->velocity.x;
+                ///ent->velocity.y = -ent->velocity.y;
+            }
+        }
+    }
+}
+
 void enemy_think(Entity* self) {
     if (!self)return;
-    self->frame = (self->frame + 0.1);
-    if ((int)self->frame%7 == 5)// && 6 * (self->enemyType + 1) - 5 != (int)self->frame)
-        self->frame -= 6;
+    //self->frame = (self->frame + 0.1);
+    //if ((int)self->frame%7 == 5)// && 6 * (self->enemyType + 1) - 5 != (int)self->frame)
+     //   self->frame -= 6;
     //slog("modulo frame/6: %i", (int)self->frame % 6);
 
     Vector2D playerPos;
     playerPos = get_player_position();
     float d;
     d = ((self->position.x - playerPos.x) * (self->position.x - playerPos.x)) + ((self->position.y - playerPos.y) * (self->position.y - playerPos.y));
-    //if (d > 500*self->enemyType)enemy_chase(self, playerPos);
-    //else 
-    enemy_chase(self, playerPos);
+   /* if (d > 2000 * self->enemyType)enemy_chase(self, playerPos);
+    else {
+        vector2d_clear(self->velocity);
+        enemy_attack(self, playerPos);
+    }*/
+    enemy_pace(self);
+
+    //todo check if player invis powerup on
 }
 
 void enemy_update(Entity* self) {
+    enemy_tilemap_collision(self->tileMap, self);
     vector2d_add(self->position, self->position, self->velocity);
     enemy_set_bounding_box(self);
     //slog("%i", self->health);
@@ -91,7 +142,8 @@ void enemy_update(Entity* self) {
 
 
 void enemy_chase(Entity* self, Vector2D playerPos) {
-    if (self->frame >6)self->frame = 0;
+    if(self->frame >= self->max_walk_frame)self->frame = 0;
+    self->frame += 0.1;
     Vector2D direction;
     float angle;
     direction.x = playerPos.x - self->position.x;
@@ -109,24 +161,33 @@ void enemy_chase(Entity* self, Vector2D playerPos) {
 * @brief enemy should walk around aimlessly **TODO** switch rand() for a different random number generator
 * @param self the entity in question
 */
-void enemy_pace(Entity* self);
-
+void enemy_pace(Entity* self) {
+    self->rotation.z += 0.1;
+    self->velocity.x = self->velocity.x + 0.001 * sin((M_PI / 180) * self->rotation.z);
+    self->velocity.y = self->velocity.y - 0.001 * cos((M_PI / 180) * self->rotation.z);
+}
 
 void enemy_attack(Entity* self, Vector2D playerPos) {
-    if (self->frame < 7)self->frame = 6*(self->enemyType)+1;
+    //todo make sure each attach pattern works
+    self->frame += 0.1;
+    if (self->frame < self->frames_per_line || self->frame > self->frames_per_line + self->max_attack_frame)self->frame = self->frames_per_line + 1;
     Vector2D direction;
     float angle;
     direction.x = playerPos.x - self->position.x;
     direction.y = playerPos.y - self->position.y;
     angle = vector2d_angle(direction);
     self->rotation.z = angle;
-
-    //if (self->frame >= 6 * (self->enemyType) + 3 && self->frame >= 6 * (self->enemyType) + 3.01) {
-       //slog("here");
-    if (self->ammo > 0) {
-        bullet_new(self->position, playerPos, self->rotation.z, 1, self->damage);
-        self->ammo--;
-    }
+    if (self->weapon == BAT) {
+        //create bounding box for bat and check for player collision
+        }
+    if (self->frame == self->frames_per_line + 1)
+    {
+        if (self->weapon != BAT && self->ammo > 0) { //todo create collision box for bat attack
+            bullet_new(vector2d((self->position.x - self->draw_offset.x - 2 * sin((M_PI / 180) * self->rotation.z)), self->position.y - self->draw_offset.y + 2 * cos((M_PI / 180) * self->rotation.z)), self->crosshair_position, self->rotation.z, 0, self->damage, self->tileMap);
+            self->ammo--;
+            self->rounds--;
+        }
+    };
 }
 
 void enemy_on_death(Entity *self) {

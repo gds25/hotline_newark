@@ -9,9 +9,9 @@
  * @param filename JSON file that stores world info
  * @return NULL on error, or an enemy entity pointer on success
  */
-Entity* enemy_new(Vector2D position, int enemyType);
+Entity* enemy_new(Vector2D position, int enemyType, TileMap *map);
 
-
+void enemy_tilemap_collision(TileMap* tileMap, Entity* self);
 /**
 * @brief enemy logic on death
 * @param self the entity in question

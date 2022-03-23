@@ -3,12 +3,15 @@
 
 #include <SDL.h>
 #include "gf2d_sprite.h"
+#include "tile_map.h"
 
 typedef struct ENTITY_S
 {
     Uint8       _inuse;     /**<this flag keeps track if this entity is active or free to reassign*/
-    Sprite     *sprite;     /**<sprite used to draw the sprite*/
+    Sprite     *sprite;    /**<sprite used to draw the sprite*/
     float       frame;      /**<current frame to draw*/
+    float       powerUp_frame_speed;      /**<current frame to draw*/
+    float       powerUp_frame_invis;      /**<current frame to draw*/
     float       max_walk_frame;
     float       max_attack_frame;
     float       frames_per_line;
@@ -37,6 +40,7 @@ typedef struct ENTITY_S
     Uint32 max_ammo;
     Uint32 rounds;
     Uint32 speed; /**<multiplier for velocity*/
+    Uint32 range;
 
     Uint8 isStatic;
     Uint8 isPlayer; //is entity the player ent
@@ -46,6 +50,8 @@ typedef struct ENTITY_S
     Uint8 isPoweredUp;
 
     Uint32 powerUpTime;
+
+    TileMap* tileMap;
 }Entity;
 
 

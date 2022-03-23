@@ -11,7 +11,7 @@ Entity get_player();
  * @param filename JSON file that stores player info
  * @return NULL on error, or an player entity pointer on success
  */
-Entity* player_new(Vector2D position, char* filename);
+Entity* player_new(Vector2D position, char* filename, TileMap *map);
 
 /**
 * @brief player logic
@@ -118,5 +118,7 @@ Vector2D get_crosshair_position(Entity* self);
 void player_set_stats(Entity* self, int pickupType);
 
 void player_set_weapon(Entity* self, int weaponType, int ammo, int rounds);
+
+void player_tilemap_collision(TileMap* tileMap, Entity* self);
 
 #endif

@@ -79,8 +79,10 @@ int main(int argc, char * argv[])
     }
 
     /*setup*/
+    tilemap = tilemap_load("levels/testlevel.json");
+
     sprite = gf2d_sprite_load_image("images/backgrounds/level_test.png");
-    player = player_new(vector2d(450, 250), controller);
+    player = player_new(vector2d(450, 250), controller, tilemap);
 
     health = pickup_new(vector2d(100, 100), 0, "images/health.png");
     armor = pickup_new(vector2d(200, 100), 1, "images/armor.png");
@@ -96,12 +98,12 @@ int main(int argc, char * argv[])
 
     mouse = gf2d_sprite_load_all("images/pointer.png",32,32,16);
     crosshair = gf2d_sprite_load_image("images/crosshair.png");
-    enemy_bat = enemy_new(vector2d(1000,200), 0);
-    enemy_pistol = enemy_new(vector2d(800,500), 1);
-    enemy_shotgun = enemy_new(vector2d(400,500), 2);
-    enemy_uzi = enemy_new(vector2d(800,200), 3);
-    enemy_mg = enemy_new(vector2d(600,300), 4);
-    tilemap = tilemap_load("levels/testlevel.json");
+    enemy_bat = enemy_new(vector2d(1000,200), 0, tilemap);
+    enemy_pistol = enemy_new(vector2d(800,500), 1, tilemap);
+    enemy_shotgun = enemy_new(vector2d(400,500), 2, tilemap);
+    enemy_uzi = enemy_new(vector2d(800,200), 3, tilemap);
+    enemy_mg = enemy_new(vector2d(600,300), 4, tilemap);
+    
 
     /*main game loop*/
     while(!done)
@@ -113,7 +115,7 @@ int main(int argc, char * argv[])
         mf+=0.1;
         if (mf >= 16.0)mf = 0;
         entity_manager_think_all();
-        tilemap_collision(tilemap, player);
+        //tilemap_collision(tilemap, player);
         check_collisions();
         entity_manager_update_all();
         

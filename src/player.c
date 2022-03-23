@@ -85,10 +85,10 @@ void player_set_stats(Entity* self, int pickupType) {
         self->ammo += 10;
         break;
     case SPEED:
-        self->ammo += 10;
+        self->powerUp_frame_speed += 0.01;
         break;
     case INVIS:
-        self->ammo += 10;
+        self->powerUp_frame_invis += 0.01;
         break;
     default:
         break;
@@ -102,7 +102,9 @@ void player_set_weapon(Entity * self, int weaponType, int ammo, int rounds, int 
         self->draw_scale.x = 2;
         self->draw_scale.y = 2;
         self->draw_offset.x = -16;
+        self->draw_offset.y = -16;
         self->rotation.x = 16;
+        self->rotation.y = 16;
         self->max_walk_frame = 8;
         self->max_attack_frame = 9;
         self->frames_per_line = 9;
@@ -114,7 +116,9 @@ void player_set_weapon(Entity * self, int weaponType, int ammo, int rounds, int 
         self->draw_scale.x = 1.4545;
         self->draw_scale.y = 2;
         self->draw_offset.x = -22;
+        self->draw_offset.y = -16;
         self->rotation.x = 22;
+        self->rotation.y = 16;
         self->max_walk_frame = 8;
         self->max_attack_frame = 6;
         self->frames_per_line = 8;
@@ -126,7 +130,9 @@ void player_set_weapon(Entity * self, int weaponType, int ammo, int rounds, int 
         self->draw_scale.x = 1.4545;
         self->draw_scale.y = 2;
         self->draw_offset.x = -22;
+        self->draw_offset.y = -16;
         self->rotation.x = 22;
+        self->rotation.y = 16;
         self->max_walk_frame = 8;
         self->max_attack_frame = 12;
         self->frames_per_line = 12;
@@ -138,7 +144,9 @@ void player_set_weapon(Entity * self, int weaponType, int ammo, int rounds, int 
         self->draw_scale.x = 1.4545;
         self->draw_scale.y = 2;
         self->draw_offset.x = -22;
+        self->draw_offset.y = -16;
         self->rotation.x = 22;
+        self->rotation.y = 16;
         self->max_walk_frame = 8;
         self->max_attack_frame = 2;
         self->frames_per_line = 8;
@@ -147,10 +155,12 @@ void player_set_weapon(Entity * self, int weaponType, int ammo, int rounds, int 
         break;
     case MG:
         self->sprite = gf2d_sprite_load_all("images/player_mg.png", 44, 32, 8);
-        self->draw_offset.x = 1.4545;
-        self->draw_offset.y = 2;
+        self->draw_scale.x = 1.4545;
+        self->draw_scale.y = 2;
         self->draw_offset.x = -22;
+        self->draw_offset.y = -16;
         self->rotation.x = 22;
+        self->rotation.y = 16;
         self->max_walk_frame = 8;
         self->max_attack_frame = 4;
         self->frames_per_line = 8;
@@ -283,18 +293,28 @@ void player_think(Entity* self)
         if (SDL_GameControllerGetButton(self->controller,
             SDL_CONTROLLER_BUTTON_RIGHTSHOULDER) && self->ammo > 0 ||
             (self->frame >= self->frames_per_line && self->frame <= self->frames_per_line + self->max_attack_frame)) {
-            self->frame = (self->frame + 0.05);
+            self->frame = (self->frame + 0.1);
             player_attack(self);
         }
     }
     else {
-        self->frame = (self->frame + 0.05);
+        self->frame = (self->frame + 0.1);
         if ((SDL_GameControllerGetButton(self->controller,
             SDL_CONTROLLER_BUTTON_RIGHTSHOULDER) && self->ammo>0) || 
             (self->frame >= self->frames_per_line && self->frame <= self->frames_per_line + self->max_attack_frame)) player_attack(self);
         else if (self->frame >= self->max_walk_frame)self->frame = 0;
-        vector2d_set_magnitude(&movement, 2);
-        vector2d_copy(self->velocity, movement);
+        if (self->powerUp_frame_speed > 0) {
+            vector2d_set_magnitude(&movement, 4);
+            vector2d_copy(self->velocity, movement);
+            self->powerUp_frame_speed += 0.1;
+            if (self->powerUp_frame_speed > 20) {
+                self->powerUp_frame_speed = 0;
+            }
+        }
+        else {
+            vector2d_set_magnitude(&movement, 2);
+            vector2d_copy(self->velocity, movement);
+        }
     }
     //slog("%f, %f", self->position.x, self->position.y);
     
@@ -303,6 +323,7 @@ void player_think(Entity* self)
 
 void player_update(Entity* self) {
    // slog("angle: %f", self->rotation.z);
+    player_tilemap_collision(self->tileMap, self);
     vector2d_add(self->position, self->position, self->velocity);
     vector2d_copy(self->crosshair_position, vector2d(self->position.x-16- 150* sin((M_PI/180)*self->rotation.z), self->position.y-16+ 150 * cos((M_PI / 180)*self->rotation.z)));
     
@@ -330,7 +351,7 @@ void player_attack(Entity* self) {
     {
         if (self->weapon != BAT) {
             slog("here");
-            bullet_new(vector2d((self->position.x - self->draw_offset.x-2*sin((M_PI / 180) * self->rotation.z)), self->position.y - self->draw_offset.y + 2*cos((M_PI / 180) * self->rotation.z)), self->crosshair_position, self->rotation.z, 0, self->damage);
+            bullet_new(vector2d((self->position.x - self->draw_offset.x-2*sin((M_PI / 180) * self->rotation.z)), self->position.y - self->draw_offset.y + 2*cos((M_PI / 180) * self->rotation.z)), self->crosshair_position, self->rotation.z, 0, self->damage, self->tileMap);
             self->ammo--;
             self->rounds--;
         }
@@ -343,7 +364,42 @@ Vector2D get_crosshair_position(Entity* self) {
     return self->crosshair_position;
 }
 
-Entity* player_new(Vector2D position, SDL_GameController* gameController)
+void player_tilemap_collision(TileMap* map, Entity* ent)
+{
+    if (!map)return;
+    if (!map->tileset)return;
+    if (!map->tilemap)return;
+    for (int i = 0; i < map->tilemap_count; i++)
+    {
+        if (map->tilemap[i]) {
+            if ((i % map->tilemap_width) * map->tileset->tile_width + (map->tileset->tile_width) >= ent->mins.x &&
+                (i % map->tilemap_width) * map->tileset->tile_width <= ent->maxs.x &&
+                (i / map->tilemap_width) * map->tileset->tile_height + (map->tileset->tile_height) >= ent->mins.y &&
+                (i / map->tilemap_width) * map->tileset->tile_height <= ent->maxs.y) {
+                /*slog("max tile x %i", (i % map->tilemap_width) * map->tileset->tile_width + (map->tileset->tile_width / 2));
+                slog("min player x %f", ent->mins.x);
+                slog("min tile x %i", (i % map->tilemap_width) * map->tileset->tile_width - (map->tileset->tile_width / 2));
+                slog("max player x %f", ent->maxs.x);
+                */
+                slog("here");
+                if (ent->entity == BULLET) {
+                    entity_free(ent);
+                }
+                Vector2D direction;
+                direction.x = (i % map->tilemap_width) * map->tileset->tile_width - ent->position.x;
+                direction.y = (i / map->tilemap_width) * map->tileset->tile_height - ent->position.y;
+
+                vector2d_set_magnitude(&direction, -1);
+                vector2d_copy(ent->velocity, direction);
+                //slog("velocity x, y = %f     %f", ent->velocity.x, ent->velocity.y);
+                //ent->velocity.x = -ent->velocity.x;
+                ///ent->velocity.y = -ent->velocity.y;
+            }
+        }
+    }
+}
+
+Entity* player_new(Vector2D position, SDL_GameController* gameController, TileMap *map)
 {
     Entity* ent;
     ent = entity_new();
@@ -366,8 +422,9 @@ Entity* player_new(Vector2D position, SDL_GameController* gameController)
     ent->max_attack_frame = 0;
     ent->frames_per_line = 8;
     ent->health = 100;
-    ent->ammo = 30;
+    ent->ammo = 0;
     ent->entity = PLAYER;
+    ent->tileMap = map;
     slog("player ent type: %i", ent->entity);
     //if (ent->entity != PLAYER) slog("this works");
 

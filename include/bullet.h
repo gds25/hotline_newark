@@ -9,7 +9,7 @@
  * @param rotation direction in which the bullet will travel (radian angle around origin)
  * @return NULL on error, or a bullet entity pointer on success
  */
-Entity* bullet_new(Vector2D position, Vector2D goalPos, float rotation, enum bulletType bullet, int damage);
+Entity* bullet_new(Vector2D position, Vector2D goalPos, float rotation, enum bulletType bullet, int damage, TileMap* map);
 
 /**
 * @brief bullet logic
@@ -28,6 +28,7 @@ void bullet_update(Entity* self);
  * @param the entity in question
  */
 
-void bullet_get_aabb(Entity* self);
+void bullet_set_aabb(Entity* self);
 
+void bullet_tilemap_collision(TileMap* map, Entity* ent);
 #endif

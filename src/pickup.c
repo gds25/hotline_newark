@@ -26,7 +26,8 @@ Entity* pickup_new(Vector2D position, int pickupType, char *filename) {
     ent->pickup = pickupType;
     ent->entity = PICKUP;
 
-    slog("pickup ent type: %d", ent->entity);
+    ent->weaponName = "this is the pickup entity";
+   // slog("%s", ent->weaponName);
 
     //ent->rotation.z = 
     vector2d_copy(ent->position, position);
@@ -60,9 +61,9 @@ Entity* weapon_new(Vector2D position, int weaponType, int ammo, int rounds, int 
     ent->ammo = ammo;
     ent->rounds = rounds;
 
-    ent->weaponName = "this is the pickup entity";
+    ent->weaponName = "this is the weapon entity";
 
-    slog("pickup ent type: %d", ent->entity);
+   // slog("%s", ent->weaponName);
 
     //ent->rotation.z = 
     vector2d_copy(ent->position, position);

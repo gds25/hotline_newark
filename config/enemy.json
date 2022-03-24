@@ -15,7 +15,7 @@
     "rotation_x": 16,
 		"sprite": "images/player_bat.png",
 		"weapon_sprite": "images/bat.png"
-  }
+  },
 	"1": {
 		"health": 60,
 		"damage": 10,
@@ -32,7 +32,7 @@
 		"rotation_x": 22,
 		"sprite": "images/player_pistol(1).png",
 		"weapon_sprite": "images/pistol.png"
-	}
+	},
 	"2": {
 		"health": 100,
 		"ammo": 4,
@@ -48,7 +48,7 @@
 		"rotation_x": 22,
 		"sprite": "images/player_shotgun.png",
 		"weapon_sprite": "images/shotgun.png"
-	}
+	},
 	"3": {
 		"health": 60,
 		"damage": 10,
@@ -64,7 +64,7 @@
 		"rotation_x": 22,
 		"sprite": "images/player_uzi.png",
 		"weapon_sprite": "images/uzi.png"
-	}
+	},
 	"4": {
 		"health": 75,
 		"ammo": 20,
@@ -79,6 +79,6 @@
 		"draw_offset_x": -22,
 		"rotation_x": 22,
 		"sprite": "images/player_mg.png",
-		"weapon_sprite": "images/mg.png"
+		"weapon_sprite": "images/machinegun.png"
 	}
 }

@@ -23,7 +23,7 @@ Entity* enemy_new(Vector2D position, int enemyType, TileMap *map) {
     char* enemy[8];
     snprintf(enemy, 8, "%i", enemyType);
 
-    slog("enemytype %s", enemy);
+    //slog("enemytype %s", enemy);
 
     json = sj_load("config/enemy.json");
     if (!json)
@@ -73,7 +73,9 @@ Entity* enemy_new(Vector2D position, int enemyType, TileMap *map) {
     ent->think = enemy_think;
     ent->update = enemy_update;
 
-    slog("enemy type: %i", ent->weapon);
+    //slog("enemy type: %i", ent->weapon);
+
+    slog("%s", ent->weaponName);
 
     //ent->rotation.z = 
     vector2d_copy(ent->position, position);

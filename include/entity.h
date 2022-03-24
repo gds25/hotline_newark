@@ -28,7 +28,7 @@ typedef struct ENTITY_S
     Vector2D crosshair_position; /**<ONLY USED IN PLAYER.H - position of crosshair*/
     //int enemyType; /**<ONLY USED IN ENEMY.H - specifies enemy type*/
 
-    enum entType { PLAYER, ENEMY, PICKUP, WEAPON, BULLET } entity;
+    enum entType { MISC, PLAYER, ENEMY, PICKUP, WEAPON, BULLET } entity;
     enum pickupType { HEALTH, ARMOR, AMMO, SPEED, INVIS } pickup; /**<ONLY USED IN PICKUP.H - specifies pickup type*/
     enum weaponType{ BAT, PISTOL, SHOTGUN, UZI, MG } weapon; /**<ONLY USED IN PICKUP.H - specifies weapon type*/
     enum bulletType{ FOR, AGAINST } bullet; /**<ONLY USED IN PICKUP.H - specifies weapon type*/

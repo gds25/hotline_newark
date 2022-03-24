@@ -367,7 +367,7 @@ void player_attack(Entity* self) {
         SDL_CONTROLLER_BUTTON_RIGHTSHOULDER))self->frame = self->frames_per_line + 1;
     if (self->frame == self->frames_per_line + 1)
     {
-        if (self->weapon != BAT) {
+        if (self->weapon != BAT && self->ammo>0) {
            // slog("here");
             bullet_new(vector2d((self->position.x - self->draw_offset.x-2*sin((M_PI / 180) * self->rotation.z)), self->position.y - self->draw_offset.y + 2*cos((M_PI / 180) * self->rotation.z)), self->crosshair_position, self->rotation.z, 0, self->damage, self->tileMap);
            
@@ -465,13 +465,14 @@ Entity* player_new(Vector2D position, SDL_GameController* gameController, TileMa
     ent->damage = 100;
 
     ent->weaponName = "this is the player entity";
-    slog("entity %i", ent->entity);
+    //slog("%s", ent->weaponName);
+    //slog("entity %i", ent->entity);
     //slog("player ent type: %i", ent->entity);
     //if (ent->entity != PLAYER) slog("this works");
 
     //ent->rotation.z = ;
-    slog("player health: %i", ent->health);
-    slog("damage %i", ent->health);
+    //slog("player health: %i", ent->health);
+    //slog("damage %i", ent->health);
     vector2d_copy(ent->position, position);
     return ent;
 }

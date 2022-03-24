@@ -15,7 +15,7 @@ Entity* bullet_new(Vector2D position, Vector2D goalPos, float rotation, enum bul
         return NULL;
     }
     ent->sprite = gf2d_sprite_load_all("images/bullet.png", 16, 16, 1);
-    ent->think = bullet_think;
+    //ent->think = bullet_think;
     ent->update = bullet_update;
     ent->entity = BULLET;
     ent->bullet = bullet;
@@ -34,9 +34,13 @@ Entity* bullet_new(Vector2D position, Vector2D goalPos, float rotation, enum bul
     vector2d_set_magnitude(&movement, 10);
     vector2d_copy(ent->velocity, movement);
 
+    bullet_set_aabb(ent);
+
     ent->weaponName = "this is the bullet entity";
 
-    slog("created bullet");
+    //slog("%s", ent->weaponName);
+
+    //slog("created bullet");
     // slog("bullet type: %i", ent->bullet);
     return ent;
 }
@@ -60,21 +64,34 @@ void bullet_think(Entity* self) {
 * @param self the entity in question
 */
 void bullet_update(Entity* self) {
+    Vector2D playerPos = player_get_bounding_box();
+
+    if (self->bullet == AGAINST &&
+        self->position.x >= playerPos.x &&
+        self->position.x <= playerPos.x + 32 &&
+        self->position.y >= playerPos.y &&
+        self->position.y <= playerPos.y + 32
+        ) {
+        //slog("in bullet.c");
+        entity_free(self);
+    }
     vector2d_add(self->position, self->position, self->velocity);
-    vector2d_copy(self->mins, self->position);
-    vector2d_copy(self->maxs, self->position);
+   // vector2d_copy(self->mins, self->position);
+   // vector2d_copy(self->maxs, self->position);
     bullet_set_aabb(self);
     bullet_tilemap_collision(self->tileMap, self);
     //slog("velocity: %f, %f", self->velocity.x, self->velocity.y);
     //slog("position: %f, %f", self->position.x, self->position.y);
-}
 
+}
 
 void bullet_set_aabb(Entity* self) {
     self->mins.x = self->position.x;
     self->mins.y = self->position.y;
     self->maxs.x = self->position.x;
     self->maxs.y = self->position.y;
+
+   // slog("position: %f, %f", self->maxs.x, self->maxs.y);
 }
 
 void bullet_tilemap_collision(TileMap* map, Entity* ent)

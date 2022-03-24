@@ -80,9 +80,9 @@ int main(int argc, char * argv[])
 
     /*setup*/
     tilemap = tilemap_load("levels/testlevel.json");
-
-    sprite = gf2d_sprite_load_image("images/backgrounds/test_level.png");
     player = player_new(vector2d(100, 100), controller, tilemap);
+    sprite = gf2d_sprite_load_image("images/backgrounds/test_level.png");
+    
 
     health = pickup_new(vector2d(300, 600), 0, "images/health.png");
     armor = pickup_new(vector2d(400, 150), 1, "images/armor.png");
@@ -111,9 +111,9 @@ int main(int argc, char * argv[])
         SDL_PumpEvents();   // update SDL's internal event structures
         keys = SDL_GetKeyboardState(NULL); // get the keyboard state for this frame
         /*update things here*/
-        SDL_GetMouseState(&mx,&my);
-        mf+=0.1;
-        if (mf >= 16.0)mf = 0;
+       // SDL_GetMouseState(&mx,&my);
+       // mf+=0.1;
+       // if (mf >= 16.0)mf = 0;
         entity_manager_think_all();
         //tilemap_collision(tilemap, player);
         check_collisions();
@@ -145,7 +145,7 @@ int main(int argc, char * argv[])
                 (int)mf);*/
             //char ui_health[15];
             char *ui[30];
-            int player_health = get_player_health();
+            //int player_health = get_player_health();
             //slog("health = %i", player_health);
             //const char* UI = "Health";
             snprintf(ui, 100, "Health : %i/100 Armor: %i/25 Ammo: %i", get_player_health(), get_player_armor(), get_player_ammo());
@@ -154,7 +154,7 @@ int main(int argc, char * argv[])
             //memccpy(memccpy(src, "Health :", '\0', 100) - 1, num, '\0', 100);
             gf2d_font_draw_line_tag(ui, FT_H4, gfc_color(0, 0, 0, 0), vector2d(10, 675));
         gf2d_grahics_next_frame();// render current draw frame and skip to the next frame
-        
+        //if (get_player_health() <= 0)done = 1;
         if (keys[SDL_SCANCODE_ESCAPE])done = 1; // exit condition
        // slog("Rendering at %f FPS",gf2d_graphics_get_frames_per_second());
     }

@@ -27,6 +27,8 @@ Entity* bat_new(Vector2D position, int damage, enum bulletType bat)
 
     ent->weaponName = "this is the bat entity";
 
+    //slog("%s", ent->weaponName);
+
     ent->mins.x = ent->position.x - 8;
     ent->mins.y = ent->position.y - 8;
     ent->maxs.x = ent->position.x + 40;

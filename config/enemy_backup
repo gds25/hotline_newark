@@ -5,7 +5,6 @@
 #include "player.h"
 #include "pickup.h"
 #include "bullet.h"
-#include "bat.h"
 #include "enemy.h"
 
 static Entity enemy = { 0 };
@@ -54,27 +53,29 @@ Entity* enemy_new(Vector2D position, int enemyType, TileMap *map) {
 
     //todo finish filling json with correct data
     Sint32 frame_width;
-    frame_width = sj_get_integer_value(sj_object_get_value(pjson, "frame_width"), NULL);
-    ent->draw_offset.x = sj_get_integer_value(sj_object_get_value(pjson, "draw_offset_x"), NULL);;
-    ent->rotation.x = sj_get_integer_value(sj_object_get_value(pjson, "rotation_x"), NULL);;
+    Sint32 frame_height;
+    ent->draw_scale.x = 1.4545;
+    ent->draw_offset.y = 2;
+    ent->draw_offset.x = -22;
     ent->draw_offset.y = -16;
-    ent->rotation.y = 16;
-    ent->draw_scale.x = 2;
-    ent->draw_scale.y = 2;
+    ent->rotation.x = 22;
+    ent->rotation.x = 16;
 
+    ent->sprite = gf2d_sprite_load_all(sj_get_string_value(sj_object_get_value(pjson, "sprite")), 32, 32, 8);
 
-    ent->sprite = gf2d_sprite_load_all(sj_get_string_value(sj_object_get_value(pjson, "sprite")), frame_width, 32, ent->frames_per_line);
-    ent->weaponName = sj_get_string_value(sj_object_get_value(pjson, "weapon_sprite"));
-
-    ent->weapon = enemyType;
+    ent->enemyType = enemyType;
+    /*ent->draw_offset.x = -16;
+    ent->draw_offset.y = -16;
+    ent->rotation.x = 8;
+    ent->rotation.y = 8;*/
     ent->entity = ENEMY;
     ent->tileMap = map;
 
     ent->think = enemy_think;
     ent->update = enemy_update;
+    //TODO: set enemy stats based off enemy type in json
 
-    slog("enemy type: %i", ent->weapon);
-
+    slog("enemy health: %i", ent->health);
     //ent->rotation.z = 
     vector2d_copy(ent->position, position);
     return ent;
@@ -100,6 +101,8 @@ void enemy_tilemap_collision(TileMap* map, Entity* ent)
                 vector2d_set_magnitude(&direction, -1);
                 vector2d_copy(ent->velocity, direction);
                 //slog("velocity x, y = %f     %f", ent->velocity.x, ent->velocity.y);
+                //ent->velocity.x = -ent->velocity.x;
+                ///ent->velocity.y = -ent->velocity.y;
             }
         }
     }
@@ -113,23 +116,17 @@ void enemy_think(Entity* self) {
     //slog("modulo frame/6: %i", (int)self->frame % 6);
 
     Vector2D playerPos;
-    float invis;
     playerPos = get_player_position();
-    invis = get_invis_frame(self);
-    //slog("invis: %f", invis);
     float d;
     d = ((self->position.x - playerPos.x) * (self->position.x - playerPos.x)) + ((self->position.y - playerPos.y) * (self->position.y - playerPos.y));
-    
-    self->frame += 0.1;
-
-    if ((d < self->range || (self->frame >= self->frames_per_line && self->frame <= self->frames_per_line + self->max_attack_frame)) &&
-        invis == 0) {
+   /* if (d > 2000 * self->enemyType)enemy_chase(self, playerPos);
+    else {
         vector2d_clear(self->velocity);
         enemy_attack(self, playerPos);
-    }
-    else if (d < self->range*5 && invis == 0)enemy_chase(self, playerPos);
-    else enemy_pace(self);
-   //todo check if player invis powerup on
+    }*/
+    enemy_pace(self);
+
+    //todo check if player invis powerup on
 }
 
 void enemy_update(Entity* self) {
@@ -146,6 +143,7 @@ void enemy_update(Entity* self) {
 
 void enemy_chase(Entity* self, Vector2D playerPos) {
     if(self->frame >= self->max_walk_frame)self->frame = 0;
+    self->frame += 0.1;
     Vector2D direction;
     float angle;
     direction.x = playerPos.x - self->position.x;
@@ -164,7 +162,6 @@ void enemy_chase(Entity* self, Vector2D playerPos) {
 * @param self the entity in question
 */
 void enemy_pace(Entity* self) {
-    if (self->frame >= self->max_walk_frame)self->frame = 0;
     self->rotation.z += 0.1;
     self->velocity.x = self->velocity.x + 0.001 * sin((M_PI / 180) * self->rotation.z);
     self->velocity.y = self->velocity.y - 0.001 * cos((M_PI / 180) * self->rotation.z);
@@ -172,6 +169,7 @@ void enemy_pace(Entity* self) {
 
 void enemy_attack(Entity* self, Vector2D playerPos) {
     //todo make sure each attach pattern works
+    self->frame += 0.1;
     if (self->frame < self->frames_per_line || self->frame > self->frames_per_line + self->max_attack_frame)self->frame = self->frames_per_line + 1;
     Vector2D direction;
     float angle;
@@ -179,42 +177,22 @@ void enemy_attack(Entity* self, Vector2D playerPos) {
     direction.y = playerPos.y - self->position.y;
     angle = vector2d_angle(direction);
     self->rotation.z = angle;
-    //if (self->weapon == BAT) {
+    if (self->weapon == BAT) {
         //create bounding box for bat and check for player collision
-      //  }
+        }
     if (self->frame == self->frames_per_line + 1)
     {
-        //slog("attacking");
-        if (self->weapon != BAT) {
-            //slog("shooting");
-            bullet_new(vector2d((self->position.x - self->draw_offset.x - 2 * sin((M_PI / 180) * self->rotation.z)), self->position.y - self->draw_offset.y + 2 * cos((M_PI / 180) * self->rotation.z)), playerPos, self->rotation.z - 90, 1, self->damage, self->tileMap);
-            if (self->weapon == SHOTGUN) {
-               // slog("shotgun");
-                bullet_new(vector2d(
-                    (self->position.x - self->draw_offset.x - 2 * sin((M_PI / 180) * self->rotation.z)), self->position.y - self->draw_offset.y + 2 * cos((M_PI / 180) * self->rotation.z)),
-                    vector2d(playerPos.x - 15 * sin((M_PI / 180) * (self->rotation.z + (float)15)), playerPos.y + 15 * cos((M_PI / 180) * (self->rotation.z + (float)15))),
-                    self->rotation.z - 90, 1, self->damage, self->tileMap);
-                bullet_new(vector2d(
-                    (self->position.x - self->draw_offset.x - 2 * sin((M_PI / 180) * self->rotation.z)), self->position.y - self->draw_offset.y + 2 * cos((M_PI / 180) * self->rotation.z)),
-                    vector2d(playerPos.x - 15 * sin((M_PI / 180) * (self->rotation.z + (float)30)), playerPos.y + 15 * cos((M_PI / 180) * (self->rotation.z + (float)30))),
-                    self->rotation.z - 90, 1, self->damage, self->tileMap);
-                bullet_new(vector2d(
-                    (self->position.x - self->draw_offset.x - 2 * sin((M_PI / 180) * self->rotation.z)), self->position.y - self->draw_offset.y + 2 * cos((M_PI / 180) * self->rotation.z)),
-                    vector2d(playerPos.x - 15 * sin((M_PI / 180) * (self->rotation.z - (float)30)), playerPos.y + 15 * cos((M_PI / 180) * (self->rotation.z - (float)30))),
-                    self->rotation.z - 90, 1, self->damage, self->tileMap);
-                bullet_new(vector2d(
-                    (self->position.x - self->draw_offset.x - 2 * sin((M_PI / 180) * self->rotation.z)), self->position.y - self->draw_offset.y + 2 * cos((M_PI / 180) * self->rotation.z)),
-                    vector2d(playerPos.x - 15 * sin((M_PI / 180) * (self->rotation.z - (float)15)), playerPos.y + 15 * cos((M_PI / 180) * (self->rotation.z - (float)15))),
-                    self->rotation.z - 90, 1, self->damage, self->tileMap);
-            }
+        if (self->weapon != BAT && self->ammo > 0) { //todo create collision box for bat attack
+            bullet_new(vector2d((self->position.x - self->draw_offset.x - 2 * sin((M_PI / 180) * self->rotation.z)), self->position.y - self->draw_offset.y + 2 * cos((M_PI / 180) * self->rotation.z)), self->crosshair_position, self->rotation.z, 0, self->damage, self->tileMap);
+            self->ammo--;
+            self->rounds--;
         }
-        else bat_new(self->position, self->damage, 1);
-    }
+    };
 }
 
 void enemy_on_death(Entity *self) {
-    //slog("here");
-    weapon_new(self->position, self->weapon, self->ammo, self->rounds, self->damage, self->weaponName);
+    slog("here");
+    weapon_new(self->position, self->enemyType, self->ammo, self->rounds, self->damage, "images/pistol.png");
     entity_free(self);
 }
 
@@ -223,8 +201,8 @@ Vector2D enemy_get_bounding_box() {
 }
 
 void enemy_set_bounding_box(Entity* self) {
-    self->mins.x = self->position.x;
-    self->mins.y = self->position.y;
+    self->mins.x = self->position.x - 32;
+    self->mins.y = self->position.y - 32;
     self->maxs.x = self->position.x + 32;
     self->maxs.y = self->position.y + 32;
 

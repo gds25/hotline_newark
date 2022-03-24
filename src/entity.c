@@ -185,6 +185,7 @@ void check_collisions() {
 					slog("collision %i, %i", i, j);
 					player_set_stats(&entity_manager.entity_list[i], entity_manager.entity_list[j].pickup);
 					entity_free(&entity_manager.entity_list[j]);
+                   // slog("health %i", entity_manager.entity_list[i].health);
 				}
 				else if (entity_manager.entity_list[i].entity == PLAYER && entity_manager.entity_list[j].entity == WEAPON) {
 					if (SDL_GameControllerGetButton(entity_manager.entity_list[i].controller,
@@ -197,12 +198,28 @@ void check_collisions() {
 				else if (entity_manager.entity_list[i].entity == ENEMY && entity_manager.entity_list[j].bullet == FOR && entity_manager.entity_list[j].entity == BULLET) {
 						//slog("collision %i, %i", i, j);
 					entity_manager.entity_list[i].health -= entity_manager.entity_list[j].damage;
-						// slog("health %i", entity_manager.entity_list[i].health);
+						//slog("health %i", entity_manager.entity_list[i].health);
 				    	entity_free(&entity_manager.entity_list[j]);
 				}
+               else if (entity_manager.entity_list[i].entity == PLAYER && entity_manager.entity_list[j].bullet == AGAINST && entity_manager.entity_list[j].entity == BULLET) {
+                   // slog("health %i", entity_manager.entity_list[i].health);
+                    // slog("entity %i", entity_manager.entity_list[i].entity);
+                    if (entity_manager.entity_list[i].armor > 0) {
+                        slog("hitting armor");
+                        entity_manager.entity_list[i].armor -= entity_manager.entity_list[j].damage;
+                        if (entity_manager.entity_list[i].armor < 0) {
+                            entity_manager.entity_list[i].health += entity_manager.entity_list[i].armor;
+                            entity_manager.entity_list[i].armor = 0;
+                        }
+                    }
+                    else { entity_manager.entity_list[i].health = entity_manager.entity_list[i].health - entity_manager.entity_list[j].damage; 
+                    }
+                    slog("health %i", entity_manager.entity_list[i].health);
+                    slog("entity %s", entity_manager.entity_list[i].weaponName);
+
+				}
                 
-				//vector2d_clear(entity_manager.entity_list[i].velocity);
-				//vector2d_clear(entity_manager.entity_list[j].velocity);
+
 			}
 
 		}

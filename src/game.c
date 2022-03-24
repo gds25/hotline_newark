@@ -81,28 +81,28 @@ int main(int argc, char * argv[])
     /*setup*/
     tilemap = tilemap_load("levels/testlevel.json");
 
-    sprite = gf2d_sprite_load_image("images/backgrounds/level_test.png");
-    player = player_new(vector2d(450, 250), controller, tilemap);
+    sprite = gf2d_sprite_load_image("images/backgrounds/test_level.png");
+    player = player_new(vector2d(100, 100), controller, tilemap);
 
-    health = pickup_new(vector2d(100, 100), 0, "images/health.png");
-    armor = pickup_new(vector2d(200, 100), 1, "images/armor.png");
-    ammo = pickup_new(vector2d(300, 100), 2, "images/ammo.png");
-    speed = pickup_new(vector2d(400, 100), 3, "images/speed.png");
-    invis = pickup_new(vector2d(500, 100), 4, "images/invisibility.png");
+    health = pickup_new(vector2d(300, 600), 0, "images/health.png");
+    armor = pickup_new(vector2d(400, 150), 1, "images/armor.png");
+    ammo = pickup_new(vector2d(650, 400), 2, "images/ammo.png");
+    speed = pickup_new(vector2d(1000, 150), 3, "images/speed.png");
+    invis = pickup_new(vector2d(1050, 600), 4, "images/invisibility.png");
 
-    bat = weapon_new(vector2d(100, 200), 0, -1, -1, 20, "images/bat.png");
-    pistol = weapon_new(vector2d(100, 300), 1, 8, 24, 20, "images/pistol.png");
-    shotgun = weapon_new(vector2d(100, 400), 2, 4, 12, 80, "images/shotgun.png");
-    uzi = weapon_new(vector2d(100, 500), 3, 30, 120, 10, "images/uzi.png");
-    mg = weapon_new(vector2d(100, 600), 4, 20, 60, 30, "images/machinegun.png");
+    //bat = weapon_new(vector2d(200, 200), 0, 0, 0, 20, "images/bat.png");
+    //pistol = weapon_new(vector2d(200, 300), 1, 8, 24, 20, "images/pistol.png");
+    //shotgun = weapon_new(vector2d(200, 450), 2, 4, 12, 80, "images/shotgun.png");
+    //uzi = weapon_new(vector2d(200, 500), 3, 30, 120, 10, "images/uzi.png");
+    //mg = weapon_new(vector2d(200, 200), 4, 20, 60, 30, "images/machinegun.png");
 
-    mouse = gf2d_sprite_load_all("images/pointer.png",32,32,16);
+    //mouse = gf2d_sprite_load_all("images/pointer.png",32,32,16);
     crosshair = gf2d_sprite_load_image("images/crosshair.png");
     enemy_bat = enemy_new(vector2d(1000,200), 0, tilemap);
     enemy_pistol = enemy_new(vector2d(800,500), 1, tilemap);
-    enemy_shotgun = enemy_new(vector2d(400,500), 2, tilemap);
-    enemy_uzi = enemy_new(vector2d(800,200), 3, tilemap);
-    enemy_mg = enemy_new(vector2d(600,300), 4, tilemap);
+    //enemy_shotgun = enemy_new(vector2d(400,500), 2, tilemap);
+    //enemy_uzi = enemy_new(vector2d(800,200), 3, tilemap);
+    //enemy_mg = enemy_new(vector2d(600,300), 4, tilemap);
     
 
     /*main game loop*/
@@ -119,10 +119,10 @@ int main(int argc, char * argv[])
         check_collisions();
         entity_manager_update_all();
         
-        player_aabb = player_get_bounding_box();
-        enemy_aabb = enemy_get_bounding_box();
-        SDL_Rect player_box = { player_aabb.x, player_aabb.y, 32, 32 };
-        SDL_Rect enemy_box = { enemy_aabb.x, enemy_aabb.y, 64, 64 };
+       // player_aabb = player_get_bounding_box();
+       // enemy_aabb = enemy_get_bounding_box();
+        //SDL_Rect player_box = { player_aabb.x, player_aabb.y, 32, 32 };
+        //SDL_Rect enemy_box = { enemy_aabb.x, enemy_aabb.y, 32, 32 };
         gf2d_graphics_clear_screen();// clears drawing buffers
         // all drawing should happen betweem clear_screen and next_frame
             //backgrounds drawn first
@@ -130,11 +130,11 @@ int main(int argc, char * argv[])
             // draw other game elements
             tilemap_draw(tilemap);
             entity_manager_draw_all();
-            gf2d_draw_rect(player_box, vector4d(255, 255, 255, 255));
-            gf2d_draw_rect(enemy_box, vector4d(255, 255, 255, 255));
+          //  gf2d_draw_rect(player_box, vector4d(255, 255, 255, 255));
+          //  gf2d_draw_rect(enemy_box, vector4d(255, 255, 255, 255));
             gf2d_sprite_draw_image(crosshair, get_crosshair_position(player));
             //UI elements last
-            gf2d_sprite_draw(
+            /*gf2d_sprite_draw(
                 mouse,
                 vector2d(mx,my),
                 NULL,
@@ -142,17 +142,17 @@ int main(int argc, char * argv[])
                 NULL,
                 NULL,
                 &mouseColor,
-                (int)mf);
+                (int)mf);*/
             //char ui_health[15];
             char *ui[30];
             int player_health = get_player_health();
             //slog("health = %i", player_health);
             //const char* UI = "Health";
-            snprintf(ui, 100, "Health : %i/100 Armor: %i/25 Ammo: %i/%i", get_player_health(), get_player_armor(), get_player_ammo(), get_player_rounds());
+            snprintf(ui, 100, "Health : %i/100 Armor: %i/25 Ammo: %i", get_player_health(), get_player_armor(), get_player_ammo());
             //free(&ui);
             //snprintf(ui, 100, "Health : %i", get_player_health());
             //memccpy(memccpy(src, "Health :", '\0', 100) - 1, num, '\0', 100);
-            gf2d_font_draw_line_tag(ui, FT_H4, gfc_color(255, 255, 255, 255), vector2d(10, 650));
+            gf2d_font_draw_line_tag(ui, FT_H4, gfc_color(0, 0, 0, 0), vector2d(10, 675));
         gf2d_grahics_next_frame();// render current draw frame and skip to the next frame
         
         if (keys[SDL_SCANCODE_ESCAPE])done = 1; // exit condition

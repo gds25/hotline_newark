@@ -60,6 +60,8 @@ Entity* weapon_new(Vector2D position, int weaponType, int ammo, int rounds, int 
     ent->ammo = ammo;
     ent->rounds = rounds;
 
+    ent->weaponName = "this is the pickup entity";
+
     slog("pickup ent type: %d", ent->entity);
 
     //ent->rotation.z = 

@@ -5,7 +5,6 @@
 #include "camera.h"
 #include "player.h"
 #include "bullet.h"
-#include "bat.h"
 
 //TODO
 //player on_death : bring to main menu
@@ -72,22 +71,14 @@ Vector2D player_get_bounding_box() {
     return player.mins;
 }
 
-void set_invis_frame(Entity* self) {
-    player.powerUp_frame_invis = self->powerUp_frame_invis;
-}
-
-float get_invis_frame() {
-    return player.powerUp_frame_invis;
-}
-
 void player_set_stats(Entity* self, int pickupType) {
     switch (pickupType) {
     case HEALTH:
-        self->health = MIN(100, self->health + 25);
-       // slog("player health: %i", self->health);
+        self->health += 10;
+        slog("player health: %i", self->health);
         break;
     case ARMOR:
-        self->armor = MIN(125, self->armor+25);
+        self->armor += 10;
         //slog("player health: %i", self.health);
         break;
     case AMMO:
@@ -118,25 +109,25 @@ void player_set_weapon(Entity * self, int weaponType, int ammo, int rounds, int 
         self->max_attack_frame = 9;
         self->frames_per_line = 9;
         self->max_ammo = 0;
-        self->ammo = 0;
         self->weapon = BAT;
         break;
     case PISTOL:
         self->sprite = gf2d_sprite_load_all("images/player_pistol(1).png", 44, 32, 8);
-        self->draw_scale.x = 2;
+        self->draw_scale.x = 1.4545;
         self->draw_scale.y = 2;
         self->draw_offset.x = -22;
+        self->draw_offset.y = -16;
         self->rotation.x = 22;
+        self->rotation.y = 16;
         self->max_walk_frame = 8;
         self->max_attack_frame = 6;
         self->frames_per_line = 8;
         self->max_ammo = 8;
         self->weapon = PISTOL;
-        self->ammo = 32;
         break;
     case SHOTGUN:
         self->sprite = gf2d_sprite_load_all("images/player_shotgun.png", 44, 32, 12);
-        self->draw_scale.x = 2;
+        self->draw_scale.x = 1.4545;
         self->draw_scale.y = 2;
         self->draw_offset.x = -22;
         self->draw_offset.y = -16;
@@ -147,11 +138,10 @@ void player_set_weapon(Entity * self, int weaponType, int ammo, int rounds, int 
         self->frames_per_line = 12;
         self->max_ammo = 4;
         self->weapon = SHOTGUN;
-        self->ammo = 12;
         break;
     case UZI:
         self->sprite = gf2d_sprite_load_all("images/player_uzi.png", 44, 32, 8);
-        self->draw_scale.x = 2;
+        self->draw_scale.x = 1.4545;
         self->draw_scale.y = 2;
         self->draw_offset.x = -22;
         self->draw_offset.y = -16;
@@ -162,11 +152,10 @@ void player_set_weapon(Entity * self, int weaponType, int ammo, int rounds, int 
         self->frames_per_line = 8;
         self->max_ammo = 30;
         self->weapon = UZI;
-        self->ammo = 120;
         break;
     case MG:
         self->sprite = gf2d_sprite_load_all("images/player_mg.png", 44, 32, 8);
-        self->draw_scale.x = 2;
+        self->draw_scale.x = 1.4545;
         self->draw_scale.y = 2;
         self->draw_offset.x = -22;
         self->draw_offset.y = -16;
@@ -177,14 +166,14 @@ void player_set_weapon(Entity * self, int weaponType, int ammo, int rounds, int 
         self->frames_per_line = 8;
         self->max_ammo = 20;
         self->weapon = MG;
-        self->ammo = 60;
         break;
     default:
         break;
     }
+    self->ammo = ammo;
     self->rounds = rounds;
     self->damage = damage;
-    //slog("player damage: %i", self->damage);
+    slog("player damage: %i", self->damage);
 }
 
 void player_set_bounding_box(Entity* self) {
@@ -301,8 +290,8 @@ void player_think(Entity* self)
         {
             vector2d_clear(self->velocity);
         }
-        if ((SDL_GameControllerGetButton(self->controller,
-            SDL_CONTROLLER_BUTTON_RIGHTSHOULDER) && (self->ammo > 0 || self->weapon == BAT)) ||
+        if (SDL_GameControllerGetButton(self->controller,
+            SDL_CONTROLLER_BUTTON_RIGHTSHOULDER) && self->ammo > 0 ||
             (self->frame >= self->frames_per_line && self->frame <= self->frames_per_line + self->max_attack_frame)) {
             self->frame = (self->frame + 0.1);
             player_attack(self);
@@ -311,26 +300,20 @@ void player_think(Entity* self)
     else {
         self->frame = (self->frame + 0.1);
         if ((SDL_GameControllerGetButton(self->controller,
-            SDL_CONTROLLER_BUTTON_RIGHTSHOULDER) && (self->ammo>0 || self->weapon == BAT)) || 
+            SDL_CONTROLLER_BUTTON_RIGHTSHOULDER) && self->ammo>0) || 
             (self->frame >= self->frames_per_line && self->frame <= self->frames_per_line + self->max_attack_frame)) player_attack(self);
         else if (self->frame >= self->max_walk_frame)self->frame = 0;
         if (self->powerUp_frame_speed > 0) {
             vector2d_set_magnitude(&movement, 4);
             vector2d_copy(self->velocity, movement);
             self->powerUp_frame_speed += 0.1;
-            if (self->powerUp_frame_speed > 50) {
+            if (self->powerUp_frame_speed > 20) {
                 self->powerUp_frame_speed = 0;
             }
         }
         else {
             vector2d_set_magnitude(&movement, 2);
             vector2d_copy(self->velocity, movement);
-        }
-    }
-    if (self->powerUp_frame_invis > 0) {
-        self->powerUp_frame_invis += 0.1;
-        if (self->powerUp_frame_invis > 100) {
-            self->powerUp_frame_invis = 0;
         }
     }
     //slog("%f, %f", self->position.x, self->position.y);
@@ -358,8 +341,7 @@ void player_update(Entity* self) {
     set_player_health(self);
     set_player_armor(self);
     set_player_ammo(self);
-    set_invis_frame(self);
-    //slog("player health: %i", self->health);
+    //slog("player health: %i", player.health);
 }
 
 void player_attack(Entity* self) {
@@ -368,35 +350,13 @@ void player_attack(Entity* self) {
     if (self->frame == self->frames_per_line + 1)
     {
         if (self->weapon != BAT) {
-           // slog("here");
+            slog("here");
             bullet_new(vector2d((self->position.x - self->draw_offset.x-2*sin((M_PI / 180) * self->rotation.z)), self->position.y - self->draw_offset.y + 2*cos((M_PI / 180) * self->rotation.z)), self->crosshair_position, self->rotation.z, 0, self->damage, self->tileMap);
-           
-           if (self->weapon == SHOTGUN) {
-                slog("shotgun");
-                bullet_new(vector2d(
-                    (self->position.x - self->draw_offset.x - 2 * sin((M_PI / 180) * self->rotation.z)), self->position.y - self->draw_offset.y + 2 * cos((M_PI / 180) * self->rotation.z)),
-                    vector2d(self->position.x - 16 - 150 * sin((M_PI / 180) * (self->rotation.z + (float)10)), self->position.y - 16 + 150 * cos((M_PI / 180) * (self->rotation.z + (float)10))),
-                    self->rotation.z, 0, self->damage, self->tileMap);
-                bullet_new(vector2d(
-                    (self->position.x - self->draw_offset.x - 2 * sin((M_PI / 180) * self->rotation.z)), self->position.y - self->draw_offset.y + 2 * cos((M_PI / 180) * self->rotation.z)),
-                    vector2d(self->position.x - 16 - 150 * sin((M_PI / 180) * (self->rotation.z + (float)5)), self->position.y - 16 + 150 * cos((M_PI / 180) * (self->rotation.z + (float)5))), 
-                    self->rotation.z, 0, self->damage, self->tileMap);
-                bullet_new(vector2d(
-                    (self->position.x - self->draw_offset.x - 2 * sin((M_PI / 180) * self->rotation.z)), self->position.y - self->draw_offset.y + 2 * cos((M_PI / 180) * self->rotation.z)),
-                    vector2d(self->position.x - 16 - 150 * sin((M_PI / 180) * (self->rotation.z - (float)10)), self->position.y - 16 + 150 * cos((M_PI / 180) * (self->rotation.z - (float)10))),
-                    self->rotation.z, 0, self->damage, self->tileMap);
-                bullet_new(vector2d(
-                    (self->position.x - self->draw_offset.x - 2 * sin((M_PI / 180) * self->rotation.z)), self->position.y - self->draw_offset.y + 2 * cos((M_PI / 180) * self->rotation.z)),
-                    vector2d(self->position.x - 16 - 150 * sin((M_PI / 180) * (self->rotation.z - (float)5)), self->position.y - 16 + 150 * cos((M_PI / 180) * (self->rotation.z - (float)5))),
-                    self->rotation.z, 0, self->damage, self->tileMap);
-            }
             self->ammo--;
             self->rounds--;
         }
-        else bat_new(self->position, self->damage, 0);
     }
    // slog("attack frame: %f", self->frame);
-    //slog("player health: %i", self->health);
 }
 
 
@@ -421,7 +381,10 @@ void player_tilemap_collision(TileMap* map, Entity* ent)
                 slog("min tile x %i", (i % map->tilemap_width) * map->tileset->tile_width - (map->tileset->tile_width / 2));
                 slog("max player x %f", ent->maxs.x);
                 */
-                //slog("here");
+                slog("here");
+                if (ent->entity == BULLET) {
+                    entity_free(ent);
+                }
                 Vector2D direction;
                 direction.x = (i % map->tilemap_width) * map->tileset->tile_width - ent->position.x;
                 direction.y = (i / map->tilemap_width) * map->tileset->tile_height - ent->position.y;
@@ -462,14 +425,10 @@ Entity* player_new(Vector2D position, SDL_GameController* gameController, TileMa
     ent->ammo = 0;
     ent->entity = PLAYER;
     ent->tileMap = map;
-
-    ent->weaponName = "this is the player entity";
-    slog("entity %s", ent->weaponName);
-    //slog("player ent type: %i", ent->entity);
+    slog("player ent type: %i", ent->entity);
     //if (ent->entity != PLAYER) slog("this works");
 
     //ent->rotation.z = ;
-    slog("player health: %i", ent->health);
     vector2d_copy(ent->position, position);
     return ent;
 }

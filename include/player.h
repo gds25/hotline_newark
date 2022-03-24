@@ -11,7 +11,7 @@ Entity get_player();
  * @param filename JSON file that stores player info
  * @return NULL on error, or an player entity pointer on success
  */
-Entity* player_new(Vector2D position, char* filename, TileMap *map);
+Entity* player_new(Vector2D position, SDL_GameController* gameController, TileMap* map);
 
 /**
 * @brief player logic
@@ -95,11 +95,10 @@ void player_set_bounding_box(Entity* self);
  */
 Vector2D player_get_bounding_box();
 
-/**
- * @brief get bounding box cooridnates of player weapon
- * @param self the player entity
- */
-void sword_set_bounding_box(Entity* self);
+
+void set_invis_frame(Entity* self);
+
+float get_invis_frame();
 
 /**
  * @brief check to see if game is paused

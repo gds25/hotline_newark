@@ -5,7 +5,7 @@
 #include "player.h"
 #include "bullet.h"
 
-Entity* bullet_new(Vector2D position, Vector2D goalPos, float rotation, enum bulletType bullet, int damage, TileMap* map) {
+Entity* bullet_new(Vector2D position, Vector2D goalPos, float rotation, int bulletType, int damage, TileMap *map) {
     Entity* ent;
     Vector2D movement;
     ent = entity_new();
@@ -18,7 +18,7 @@ Entity* bullet_new(Vector2D position, Vector2D goalPos, float rotation, enum bul
     ent->think = bullet_think;
     ent->update = bullet_update;
     ent->entity = BULLET;
-    ent->bullet = bullet;
+    ent->bullet = bulletType;
     ent->draw_offset.x = -8;
     ent->draw_offset.y = -8;
     ent->rotation.x = 8;
@@ -31,13 +31,10 @@ Entity* bullet_new(Vector2D position, Vector2D goalPos, float rotation, enum bul
     movement.y = goalPos.y - position.y;
     vector2d_copy(ent->position, position);
 
-    vector2d_set_magnitude(&movement, 10);
+    vector2d_set_magnitude(&movement, 1);
     vector2d_copy(ent->velocity, movement);
-
-    ent->weaponName = "this is the bullet entity";
-
-    slog("created bullet");
-    // slog("bullet type: %i", ent->bullet);
+    //slog("created bullet");
+    //slog("velocity: %f, %f", ent->velocity.x, ent->velocity.y);
     return ent;
 }
 
@@ -47,12 +44,12 @@ Entity* bullet_new(Vector2D position, Vector2D goalPos, float rotation, enum bul
 */
 void bullet_think(Entity* self) {
     Vector2D playerPos = player_get_bounding_box();
-    if (self->bullet == AGAINST &&
-        self->position.x >= playerPos.x &&
-        self->position.x <= playerPos.x + 32 &&
+    /*if (self->position.x >= playerPos.x &&
+        self->position.x <= playerPos.x + 64 &&
         self->position.y >= playerPos.y &&
-        self->position.y <= playerPos.y + 32
-        ) entity_free(self);
+        self->position.y <= playerPos.y + 64
+        )*/
+        //entity_free(self);
 }
 
 /**
@@ -94,7 +91,7 @@ void bullet_tilemap_collision(TileMap* map, Entity* ent)
                 slog("min tile x %i", (i % map->tilemap_width) * map->tileset->tile_width - (map->tileset->tile_width / 2));
                 slog("max player x %f", ent->maxs.x);
                 */
-                //slog("bullet");
+                slog("bullet");
                 entity_free(ent);
             }
         }

@@ -116,7 +116,7 @@ Vector2D get_crosshair_position(Entity* self);
 
 void player_set_stats(Entity* self, int pickupType);
 
-void player_set_weapon(Entity* self, int weaponType, int ammo, int rounds);
+void player_set_weapon(Entity* self, int weaponType, int ammo, int rounds, int damage);
 
 void player_tilemap_collision(TileMap* tileMap, Entity* self);
 

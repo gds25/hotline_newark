@@ -462,14 +462,16 @@ Entity* player_new(Vector2D position, SDL_GameController* gameController, TileMa
     ent->ammo = 0;
     ent->entity = PLAYER;
     ent->tileMap = map;
+    ent->damage = 100;
 
     ent->weaponName = "this is the player entity";
-    slog("entity %s", ent->weaponName);
+    slog("entity %i", ent->entity);
     //slog("player ent type: %i", ent->entity);
     //if (ent->entity != PLAYER) slog("this works");
 
     //ent->rotation.z = ;
     slog("player health: %i", ent->health);
+    slog("damage %i", ent->health);
     vector2d_copy(ent->position, position);
     return ent;
 }

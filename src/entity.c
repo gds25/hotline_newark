@@ -201,8 +201,8 @@ void check_collisions() {
 						//slog("health %i", entity_manager.entity_list[i].health);
 				    	entity_free(&entity_manager.entity_list[j]);
 				}
-               else if (entity_manager.entity_list[i].entity == PLAYER && entity_manager.entity_list[j].bullet == AGAINST && entity_manager.entity_list[j].entity == BULLET) {
-                   // slog("health %i", entity_manager.entity_list[i].health);
+               else if (entity_manager.entity_list[i].entity == PLAYER && entity_manager.entity_list[i].damage > 0 && entity_manager.entity_list[j].bullet == AGAINST && entity_manager.entity_list[j].entity == BULLET) {
+                    slog("damage %i", entity_manager.entity_list[i].damage);
                     // slog("entity %i", entity_manager.entity_list[i].entity);
                     if (entity_manager.entity_list[i].armor > 0) {
                         slog("hitting armor");

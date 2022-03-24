@@ -94,15 +94,15 @@ int main(int argc, char * argv[])
     //pistol = weapon_new(vector2d(200, 300), 1, 8, 24, 20, "images/pistol.png");
     //shotgun = weapon_new(vector2d(200, 450), 2, 4, 12, 80, "images/shotgun.png");
     //uzi = weapon_new(vector2d(200, 500), 3, 30, 120, 10, "images/uzi.png");
-    //mg = weapon_new(vector2d(200, 200), 4, 20, 60, 30, "images/machinegun.png");
+    mg = weapon_new(vector2d(200, 200), 4, 20, 60, 30, "images/machinegun.png");
 
     //mouse = gf2d_sprite_load_all("images/pointer.png",32,32,16);
     crosshair = gf2d_sprite_load_image("images/crosshair.png");
     enemy_bat = enemy_new(vector2d(1000,200), 0, tilemap);
     enemy_pistol = enemy_new(vector2d(800,500), 1, tilemap);
-    //enemy_shotgun = enemy_new(vector2d(400,500), 2, tilemap);
-    //enemy_uzi = enemy_new(vector2d(800,200), 3, tilemap);
-    //enemy_mg = enemy_new(vector2d(600,300), 4, tilemap);
+    enemy_shotgun = enemy_new(vector2d(400,500), 2, tilemap);
+    enemy_uzi = enemy_new(vector2d(800,200), 3, tilemap);
+    enemy_mg = enemy_new(vector2d(600,300), 4, tilemap);
     
 
     /*main game loop*/

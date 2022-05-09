@@ -26,22 +26,12 @@ void player_think(Entity* self);
 void player_update(Entity* self);
 
 /**
-* @brief translate player position on z-axis
-* @param self the player entity
-*/
-void player_jump(Entity* self);
-
-/**
-* @brief animate player rolling to the left or right
-* @param self the player entity
-*/
-void player_roll(Entity* self);
-
-/**
-* @brief animate player on death
+* @brief return to beginning of level on death
 * @param self the player entity
 */
 void player_on_death(Entity* self);
+
+void player_on_button_click(Entity* self);
 
 /**
 * @brief change attack animation frame and calculate weapon collision points
@@ -77,6 +67,10 @@ int get_player_armor();
 
 void set_player_armor(Entity* self);
 
+int get_player_score();
+
+void set_player_score(Entity* self);
+
 void set_player_ammo(Entity* self);
 
 int get_player_ammo(); 
@@ -104,13 +98,13 @@ float get_invis_frame();
  * @brief check to see if game is paused
  * @param self the player entity
  */
-Uint8 player_get_pause_state(Entity* self);
+int player_get_game_state();
 
 /**
 * @brief set pause state to see whether to draw main menu
 * @param self the player entity
 */
-void player_set_pause_state(Entity* self);
+void player_set_game_state(Entity* self);
 
 Vector2D get_crosshair_position(Entity* self);
 

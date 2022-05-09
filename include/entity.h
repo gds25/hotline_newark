@@ -28,10 +28,12 @@ typedef struct ENTITY_S
     Vector2D crosshair_position; /**<ONLY USED IN PLAYER.H - position of crosshair*/
     //int enemyType; /**<ONLY USED IN ENEMY.H - specifies enemy type*/
 
-    enum entType { MISC, PLAYER, ENEMY, PICKUP, WEAPON, BULLET } entity;
-    enum pickupType { HEALTH, ARMOR, AMMO, SPEED, INVIS } pickup; /**<ONLY USED IN PICKUP.H - specifies pickup type*/
+    enum entType { MISC, PLAYER, ENEMY, PICKUP, WEAPON, BULLET, BOSS, NPC, HOSTAGE, BUTTON, MOUSE } entity;
+    enum pickupType { HEALTH, ARMOR, AMMO, SPEED, INVIS, KEY } pickup; /**<ONLY USED IN PICKUP.H - specifies pickup type*/
     enum weaponType{ BAT, PISTOL, SHOTGUN, UZI, MG } weapon; /**<ONLY USED IN PICKUP.H - specifies weapon type*/
     enum bulletType{ FOR, AGAINST } bullet; /**<ONLY USED IN PICKUP.H - specifies weapon type*/
+
+    int state;
     char* weaponName;
     
     int health;
@@ -43,9 +45,14 @@ typedef struct ENTITY_S
     Uint32 speed; /**<multiplier for velocity*/
     Uint32 range;
 
+    Uint8 hasKey;
+    int level;
+    int score;
+
     TileMap* tileMap;
 }Entity;
 
+void entity_set_game_state(int state);
 
 /**
  * @brief initialize the internal entity entity_manager_init

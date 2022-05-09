@@ -1,0 +1,28 @@
+{
+	"menu": {
+		"color": [ 255, 255, 255, 255 ],
+		"dimensions": [ 100, 100, 800, 400 ],
+		"elements": [
+			{
+				"type": "label",
+				"name": "NPC Primary",
+				"id": 12,
+				"bounds": [ 0, 0, 780, 64 ],
+				"color": [ 255, 255, 255, 255 ],
+				"text": "My friend is being held hostage inside this building. Can you help him?",
+				"justify": "center",
+				"style": "H6"
+			},
+			{
+				"type": "label",
+				"name": "NPC Optional",
+				"id": 12,
+				"bounds": [ 0, 0, 780, 64 ],
+				"color": [ 255, 255, 255, 255 ],
+				"text": "I might've dropped something too. Can you find it and give it back to me?",
+				"justify": "center",
+				"style": "H6"
+			}
+		]
+	}
+}

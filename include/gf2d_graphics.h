@@ -67,10 +67,10 @@ SDL_Surface *gf2d_graphics_create_surface(Uint32 w,Uint32 h);
 /**
  * @brief draw a surface to the current drawing context
  * @param surface the surface to draw
- * @param srcRect the clip rect to draw from (if NULL, whole surface is used)
- * @param dstRect the position data of the rext is used for the destination position
+ * @param srcrect the clip rect to draw from (if NULL, whole surface is used)
+ * @param dstrect the position data of the rext is used for the destination position
  */
-void gf2d_graphics_blit_surface_to_screen(SDL_Surface *surface,const SDL_Rect * srcRect,SDL_Rect * dstRect);
+void gf2d_graphics_blit_surface_to_screen(SDL_Surface *surface,const SDL_Rect * srcrect,SDL_Rect * dstrect);
 
 /**
  * @brief convert an SDL Surface to the format compatible with the rendering context

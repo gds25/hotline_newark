@@ -7,16 +7,16 @@
 #include "bullet.h"
 #include "bat.h"
 
-//TODO
-//player on_death : bring to main menu
-//enemy on_death : drop weapons
-//enemy sprites
-//spwan different enemies
-//set boundaries for world/tile collisions
-//user interface
-//readme
-//json read/write
 static Entity player = { 0 };
+
+int player_get_game_state() {
+    slog("PLAYER STATE = %i", player.state);
+    return player.state;
+}
+
+void player_set_game_state(Entity* self) {
+    player.state = self->state;
+}
 
 Entity get_player() {
     //slog("%f, %f", player.position.x, player.position.y);
@@ -49,6 +49,14 @@ int get_player_armor() {
 void set_player_armor(Entity* self) {
     player.armor = self->armor;
 }
+int get_player_score() {
+    //slog("%f, %f", player.position.x, player.position.y);
+    return player.score;
+}
+
+void set_player_score(Entity* self) {
+    player.score = self->score;
+}
 
 void set_player_ammo(Entity* self) {
     player.ammo = self->ammo;
@@ -71,6 +79,10 @@ Vector2D player_get_bounding_box() {
     //slog("%f, %f", player.mins.x, player.mins.y);
     return player.mins;
 }
+
+//void player_on_death(Entity *self) {
+
+//}
 
 void set_invis_frame(Entity* self) {
     player.powerUp_frame_invis = self->powerUp_frame_invis;
@@ -98,6 +110,9 @@ void player_set_stats(Entity* self, int pickupType) {
         break;
     case INVIS:
         self->powerUp_frame_invis += 0.01;
+        break;
+    case KEY:
+        self->hasKey = 1;
         break;
     default:
         break;
@@ -336,7 +351,13 @@ void player_think(Entity* self)
     //slog("%f, %f", self->position.x, self->position.y);
     
     //slog("crosshair: %f, %f", self->crosshair_position.x, self->crosshair_position.y);
-}
+    if ((SDL_GameControllerGetButton(self->controller,
+        SDL_CONTROLLER_BUTTON_START)) && self->state == 3) {
+        self->state = 1;
+    }
+    //slog("STATE: %i", self->state);
+    //player_set_game_state(self);
+} 
 
 void player_update(Entity* self) {
    // slog("angle: %f", self->rotation.z);
@@ -359,6 +380,7 @@ void player_update(Entity* self) {
     set_player_armor(self);
     set_player_ammo(self);
     set_invis_frame(self);
+    set_player_score(self);
     //slog("player health: %i", self->health);
 }
 
@@ -422,9 +444,20 @@ void player_tilemap_collision(TileMap* map, Entity* ent)
                 slog("max player x %f", ent->maxs.x);
                 */
                 //slog("here");
+
+                if (map->tilemap[i] == 3) {
+                    if (ent->hasKey) {
+                        slog("Door unlocked.");
+                        ent->hasKey = 0;
+                        map->tilemap[i] = 0;
+                        return;
+                    }
+                }
+
                 Vector2D direction;
                 direction.x = (i % map->tilemap_width) * map->tileset->tile_width - ent->position.x;
                 direction.y = (i / map->tilemap_width) * map->tileset->tile_height - ent->position.y;
+
 
                 vector2d_set_magnitude(&direction, -1);
                 vector2d_copy(ent->velocity, direction);
@@ -463,6 +496,8 @@ Entity* player_new(Vector2D position, SDL_GameController* gameController, TileMa
     ent->entity = PLAYER;
     ent->tileMap = map;
     ent->damage = 100;
+    ent->state = 0;
+    ent->level = 1;
 
     ent->weaponName = "this is the player entity";
     //slog("%s", ent->weaponName);
@@ -473,6 +508,7 @@ Entity* player_new(Vector2D position, SDL_GameController* gameController, TileMa
     //ent->rotation.z = ;
     //slog("player health: %i", ent->health);
     //slog("damage %i", ent->health);
+    player_set_game_state(ent);
     vector2d_copy(ent->position, position);
     return ent;
 }

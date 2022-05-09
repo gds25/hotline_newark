@@ -20,7 +20,7 @@ TileMap *tilemap_load(char *filename)
 {
     int i,r,c,e;
     const char *spriteFile = NULL;
-    SJson *json,*rows,*columns,*element;
+    SJson *levelJS, *json,*rows,*columns,*element;
     TileMap *map;
     int tile_width;
     int tile_height;
@@ -33,12 +33,20 @@ TileMap *tilemap_load(char *filename)
     json = sj_load(filename);
     if (!json)return NULL;
     map = tilemap_new();
-    
-    spriteFile = sj_get_string_value(sj_object_get_value(json,"tileset"));
 
-    sj_get_integer_value(sj_object_get_value(json,"tile_width"),&tile_width);
-    sj_get_integer_value(sj_object_get_value(json,"tile_height"),&tile_height);
-    sj_get_integer_value(sj_object_get_value(json,"tile_count"),&tile_count);
+    levelJS = sj_object_get_value(json, "level");
+    if (!levelJS)
+    {
+        slog("level json missing level object");
+        sj_free(json);
+        return NULL;
+    }
+    
+    spriteFile = sj_get_string_value(sj_object_get_value(levelJS,"tile_set"));
+
+    sj_get_integer_value(sj_object_get_value(levelJS,"tile_width"),&tile_width);
+    sj_get_integer_value(sj_object_get_value(levelJS,"tile_height"),&tile_height);
+    sj_get_integer_value(sj_object_get_value(levelJS,"tile_count"),&tile_count);
     
     map->tileset = tile_set_load(
         (char *)spriteFile,
@@ -46,7 +54,7 @@ TileMap *tilemap_load(char *filename)
         tile_height,
         tile_count);
     
-    rows = sj_object_get_value(json,"tile_map");
+    rows = sj_object_get_value(levelJS,"tile_map");
     tilemap_height = sj_array_get_count(rows);
     if (!tilemap_height)
     {

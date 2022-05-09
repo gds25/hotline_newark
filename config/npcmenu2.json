@@ -1,0 +1,28 @@
+{
+	"menu": {
+		"color": [ 255, 255, 255, 255 ],
+		"dimensions": [ 100, 100, 800, 400 ],
+		"elements": [
+			{
+				"type": "label",
+				"name": "NPC Primary",
+				"id": 12,
+				"bounds": [ 0, 0, 780, 64 ],
+				"color": [ 255, 255, 255, 255 ],
+				"text": "The boss of this area is a really bad guy. I need you to assassinate him for me.",
+				"justify": "center",
+				"style": "H6"
+			},
+			{
+				"type": "label",
+				"name": "NPC Optional",
+				"id": 12,
+				"bounds": [ 0, 0, 780, 64 ],
+				"color": [ 255, 255, 255, 255 ],
+				"text": "While you're at it, can you clear this whole building? These guys are a pain in the butt.",
+				"justify": "center",
+				"style": "H6"
+			}
+		]
+	}
+}

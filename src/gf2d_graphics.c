@@ -237,7 +237,7 @@ SDL_Surface *gf2d_graphics_create_surface(Uint32 w,Uint32 h)
     return surface;
 }
 
-void gf2d_graphics_render_texture_to_screen(SDL_Texture *texture,const SDL_Rect * srcRect,SDL_Rect * dstRect)
+void gf2d_graphics_render_texture_to_screen(SDL_Texture *texture,const SDL_Rect * srcrect,SDL_Rect * dstrect)
 {
     if (!texture)return;
     if (!gf2d_graphics.renderer)
@@ -247,15 +247,15 @@ void gf2d_graphics_render_texture_to_screen(SDL_Texture *texture,const SDL_Rect 
     }
     if (SDL_RenderCopy(gf2d_graphics.renderer,
                    texture,
-                   srcRect,
-                   dstRect))
+                   srcrect,
+                   dstrect))
     {
         slog("failed to render:%s",SDL_GetError());
     }
 
 }
 
-void gf2d_graphics_blit_surface_to_screen(SDL_Surface *surface,const SDL_Rect * srcRect,SDL_Rect * dstRect)
+void gf2d_graphics_blit_surface_to_screen(SDL_Surface *surface,const SDL_Rect * srcrect,SDL_Rect * dstrect)
 {
     if (!surface)return;
     if (!gf2d_graphics.surface)
@@ -264,9 +264,9 @@ void gf2d_graphics_blit_surface_to_screen(SDL_Surface *surface,const SDL_Rect * 
         return;
     }
     SDL_BlitSurface(surface,
-                    srcRect,
+                    srcrect,
                     gf2d_graphics.surface,
-                    dstRect);
+                    dstrect);
 }
 
 SDL_Surface *gf2d_graphics_screen_convert(SDL_Surface **surface)

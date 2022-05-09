@@ -31,7 +31,7 @@
 #include "gfc_types.h"
 #include "gfc_color.h"
 
-#include "SDL_rect.h"
+#include "SDL_Rect.h"
 
 typedef enum
 {

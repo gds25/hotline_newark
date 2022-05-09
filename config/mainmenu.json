@@ -1,0 +1,87 @@
+{
+	"menu": {
+		"color": [ 255, 255, 255, 255 ],
+		"dimensions": [ 100, 100, 800, 400 ],
+		"elements": [
+			{
+				"type": "label",
+				"name": "Hotline Newark",
+				"id": 12,
+				"bounds": [ 0, 0, 780, 64 ],
+				"color": [ 255, 255, 255, 255 ],
+				"text": "Hotline Newark",
+				"justify": "center",
+				"style": "H1"
+			},
+			{
+				"type": "button",
+				"name": "New Game",
+				"id": 11,
+				"bounds": [ 0, 200, 400, 64 ],
+				"color": [ 255, 255, 255, 255 ],
+				"pressColor": [ 200, 200, 200, 200 ],
+				"highColor": [ 100, 100, 100, 100 ],
+				"onclick": "levels/level1.json",
+				"label": [
+					{
+						"type": "label",
+						"name": "New Game",
+						"id": 13,
+						"bounds": [ 0, 0, 400, 64 ],
+						"color": [ 255, 255, 255, 255 ],
+						"text": "New Game",
+						"justify": "center",
+						"align": "center",
+						"style": "H1"
+					}
+				]
+			},
+			{
+				"type": "button",
+				"name": "Level Editor",
+				"id": 10,
+				"bounds": [ 0, 300, 400, 64 ],
+				"color": [ 255, 255, 255, 255 ],
+				"pressColor": [ 200, 200, 200, 200 ],
+				"highColor": [ 100, 100, 100, 100 ],
+				"onclick": "levels/level_editor.json",
+				"label": [
+					{
+						"type": "label",
+						"name": "Level Editor",
+						"id": 14,
+						"bounds": [ 0, 0, 400, 64 ],
+						"color": [ 255, 255, 255, 255 ],
+						"text": "Level Editor",
+						"justify": "center",
+						"align": "center",
+						"style": "H1"
+					}
+				]
+			},
+			{
+				"type": "button",
+				"name": "Quit",
+				"id": 9,
+				"bounds": [ 0, 400, 400, 64 ],
+				"color": [ 255, 255, 255, 255 ],
+				"pressColor": [ 200, 200, 200, 200 ],
+				"highColor": [ 100, 100, 100, 100 ],
+				"onclick": "exit",
+				"label": [
+					{
+						"type": "label",
+						"name": "Quit",
+						"id": 12,
+						"bounds": [ 0, 0, 400, 64 ],
+						"color": [ 255, 255, 255, 255 ],
+						"text": "Quit",
+						"justify": "center",
+						"align": "center",
+						"style": "H1"
+					}
+				]
+			}
+		]
+	}
+}

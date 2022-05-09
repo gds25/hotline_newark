@@ -236,14 +236,3 @@ void enemy_set_bounding_box(Entity* self) {
     enemy.maxs.y = self->maxs.y;
 }
 
-/**
- * @brief get bounding box cooridnates of swipe/punch attack
- * @param the entity in question
- */
-void attack_get_aabb(Entity* self);
-
-/**
- * @brief free entity on death and drop a health_pack entity
- * @param the entity in question
- */
-void enemy_die(Entity* self);

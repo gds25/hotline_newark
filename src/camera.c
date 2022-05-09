@@ -1,5 +1,6 @@
 #include "camera.h"
 static SDL_Rect Camera = { 0 };
+
 void camera_set_dimensions(Vector2D size)
 {
     Camera.w = size.x;

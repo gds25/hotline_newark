@@ -61,17 +61,6 @@ Vector2D enemy_get_bounding_box();
  */
 void enemy_set_bounding_box(Entity* self);
 
-/**
- * @brief get bounding box cooridnates of swipe/punch attack
- * @param the entity in question
- */
-Vector2D attack_get_bounding_box(Entity* self);
-
-/**
- * @brief free entity on death and drop a health_pack entity
- * @param the entity in question
- */
-void enemy_die(Entity* self);
 
 #endif
 

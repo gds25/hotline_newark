@@ -57,6 +57,7 @@ void gf2d_draw_rect(SDL_Rect rect,Vector4D color)
                            255,
                            255,
                            255);
+    slog("draw rect");
 }
 
 void gf2d_draw_rects(SDL_Rect *rects,Uint32 count,Vector4D color)

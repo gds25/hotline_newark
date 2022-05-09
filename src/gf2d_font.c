@@ -3,8 +3,9 @@
 #include "gfc_color.h"
 
 #include "gf2d_graphics.h"
-#include "SDL_rect.h"
+#include "SDL_Rect.h"
 #include "gf2d_font.h"
+
 
 typedef struct
 {
@@ -202,6 +203,7 @@ void gf2d_font_draw_line_tag(char* text, FontTypes tag, Color color, Vector2D po
 
 void gf2d_font_draw_line(char* text, Font* font, Color color, Vector2D position)
 {
+    //slog("drawing line");
     SDL_Surface* surface;
     SDL_Texture* texture;
     SDL_Rect dst = { 0 };
@@ -260,6 +262,8 @@ Vector2D gf2d_font_get_bounds_tag(char* text, FontTypes tag)
 
 Vector2D gf2d_font_get_bounds(char* text, Font* font)
 {
+    slog("text: %s", text);
+    slog("getting font bounds");
     int x = -1, y = -1;
     if (!text)
     {
@@ -271,8 +275,10 @@ Vector2D gf2d_font_get_bounds(char* text, Font* font)
         slog("cannot size text, no font provided");
         return vector2d(-1, -1);
     }
-
+    slog("before ttf");
     TTF_SizeUTF8(font->font, text, &x, &y);
+    slog("after ttf");
+    //slog("done");
     return vector2d(x, y);
 }
 

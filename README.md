@@ -1,4 +1,5 @@
-# gf2d
+# Hotline Newark
+- Final game located in branch "final" (very unique)
 Goal:
 Eliminate all enemies
 
@@ -12,18 +13,17 @@ Eliminate all enemies
 
 Controls: 
 
-
 The game currently requires a dual analog controller to play (PlayStation, XBox, and Switch controllers are all compatible) 
 
-Left Stick: move 
+- Left Stick: move 
 
-Right Stick: rotate 
+- Right Stick: rotate 
 
-Right Trigger: shoot 
+- Right Trigger: shoot 
 
-A(XBox)/X(PS): pick up weapon 
+- A(XBox)/X(PS): pick up weapon 
 
-Start: pause menu (also accessable with 'p' on keyboard)
+- Start: pause menu (also accessable with 'p' on keyboard)
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------
 

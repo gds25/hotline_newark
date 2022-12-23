@@ -1,4 +1,6 @@
-# gf2d
+# Hotline Newark
+
+- Final game located in branch "final" (very unique) \n
 
 Goal:
 Eliminate all enemies

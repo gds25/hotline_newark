@@ -1,6 +1,6 @@
 # Hotline Newark
 
-- Final game located in branch "final" (very unique) \n
+- Final game located in branch "final" (very unique)
 
 Goal:
 Eliminate all enemies

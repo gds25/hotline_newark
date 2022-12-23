@@ -14,11 +14,11 @@ Eliminate all enemies
 
 Controls:
 The game currently requires a dual analog controller to play (PlayStation, XBox, and Switch controllers are all compatible)
-Left Stick: move
-Right Stick: rotate
-Right Trigger: shoot
-A(XBox)/X(PS): pick up weapon
-Start: pause menu (also assecible with 'p' on keyboard)
+- Left Stick: move
+- Right Stick: rotate
+- Right Trigger: shoot
+- A(XBox)/X(PS): pick up weapon
+- Start: pause menu (also assecible with 'p' on keyboard)
 
 -------------------------------------------------------------------------------------------------------------------------------
 
